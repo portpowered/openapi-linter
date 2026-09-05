@@ -1,0 +1,6 @@
+version: 1
+rules:
+  - id: customer.api-title
+    check: customer.title
+    options:
+      title: Customer API

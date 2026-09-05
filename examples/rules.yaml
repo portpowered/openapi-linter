@@ -1,0 +1,7 @@
+version: 1
+rules:
+  - id: customer.operation-style
+    check: openapi.operation-id
+    options:
+      required: true
+      pattern: '^[a-z][A-Za-z0-9]*$'

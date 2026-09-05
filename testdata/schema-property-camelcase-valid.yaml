@@ -1,0 +1,50 @@
+openapi: "3.0.3"
+info:
+  title: Test API - Property CamelCase Valid
+  version: "1.0.0"
+paths:
+  /test:
+    get:
+      operationId: test
+      summary: Test
+      responses:
+        "200":
+          description: OK
+components:
+  schemas:
+    ValidSchema:
+      type: object
+      description: A schema with all camelCase properties
+      properties:
+        widgetName:
+          type: string
+          description: A valid camelCase property
+        widgetCount:
+          type: integer
+          description: Another valid camelCase property
+        nestedObject:
+          type: object
+          description: A nested object with camelCase name
+    OAuthSchema:
+      type: object
+      description: A schema with well-known OAuth properties (should be excluded)
+      properties:
+        client_id:
+          type: string
+          description: OAuth client ID (well-known, should not be flagged)
+        access_token:
+          type: string
+          description: OAuth access token (well-known, should not be flagged)
+        normalField:
+          type: string
+          description: A normal camelCase field
+    ExtensionSchema:
+      type: object
+      description: A schema with OpenAPI extension properties
+      properties:
+        x-custom-field:
+          type: string
+          description: An extension property (should not be flagged)
+        regularField:
+          type: string
+          description: A normal camelCase field

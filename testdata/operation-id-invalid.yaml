@@ -1,0 +1,35 @@
+openapi: "3.0.3"
+info:
+  title: Test API - Operation ID Invalid
+  version: "1.0.0"
+paths:
+  /endpoints:
+    get:
+      operationId: ListEndpoints
+      summary: PascalCase operationId (invalid)
+      responses:
+        "200":
+          description: OK
+    post:
+      operationId: endpoint_create
+      summary: snake_case operationId (invalid)
+      responses:
+        "201":
+          description: Created
+  /endpoints/{endpointId}:
+    get:
+      summary: Missing operationId (invalid)
+      responses:
+        "200":
+          description: OK
+    delete:
+      operationId: deleteEndpoint
+      summary: camelCase operationId (valid)
+      responses:
+        "204":
+          description: No Content
+components:
+  schemas:
+    Placeholder:
+      type: object
+      description: Placeholder schema

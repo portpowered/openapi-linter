@@ -1,0 +1,60 @@
+openapi: "3.0.3"
+info:
+  title: Test API - Request/Response Example Invalid
+  version: "1.0.0"
+paths:
+  /widgets:
+    post:
+      operationId: createWidget
+      summary: Create a widget (missing examples on both request and response)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+    get:
+      operationId: listWidgets
+      summary: List widgets (response missing example)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+  /widgets/{widgetId}:
+    get:
+      operationId: getWidget
+      summary: Get widget (has example, should pass)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+              example:
+                id: "w-abc123"
+components:
+  schemas:
+    Placeholder:
+      type: object
+      description: Placeholder schema

@@ -1,0 +1,38 @@
+openapi: "3.0.3"
+info:
+  title: Test API - Schema Naming Invalid
+  version: "1.0.0"
+paths:
+  /test:
+    get:
+      operationId: getTest
+      summary: Test endpoint
+      responses:
+        "200":
+          description: OK
+components:
+  schemas:
+    ValidSchema:
+      type: object
+      description: A valid PascalCase schema name
+      properties:
+        id:
+          type: string
+    create_widget_request:
+      type: object
+      description: A snake_case schema name (invalid)
+      properties:
+        name:
+          type: string
+    endpoint-group-response:
+      type: object
+      description: A kebab-case schema name (invalid)
+      properties:
+        id:
+          type: string
+    createEndpointRequest:
+      type: object
+      description: A camelCase schema name (invalid)
+      properties:
+        id:
+          type: string

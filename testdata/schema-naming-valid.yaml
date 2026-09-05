@@ -1,0 +1,106 @@
+openapi: "3.0.3"
+info:
+  title: Test API - Schema Naming Valid
+  version: "1.0.0"
+paths:
+  /test:
+    get:
+      operationId: getTest
+      summary: Test endpoint
+      description: Lists test resources.
+      parameters:
+        - name: expand
+          in: query
+          description: Expansion tokens.
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: nextToken
+          in: query
+          description: Cursor for the next page.
+          required: false
+          schema:
+            type: string
+        - name: maxResults
+          in: query
+          description: Maximum number of results to return.
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TestQueryResponse"
+              example:
+                results:
+                  - id: test-1
+                paginationContext:
+                  maxResults: 1
+                errors: []
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StandardError"
+              example:
+                code: invalid-request
+                family: REQUEST
+                message: Invalid request
+                type: BAD_REQUEST
+components:
+  schemas:
+    StandardError:
+      type: object
+      description: A standard error response.
+      properties:
+        code:
+          type: string
+        family:
+          type: string
+        message:
+          type: string
+        type:
+          type: string
+    CreateWidgetRequest:
+      type: object
+      description: A valid PascalCase schema name
+      properties:
+        name:
+          type: string
+    EndpointGroupResponse:
+      type: object
+      description: Another valid PascalCase schema name
+      properties:
+        id:
+          type: string
+    Widget:
+      type: object
+      description: A single-word PascalCase schema name
+      properties:
+        id:
+          type: string
+    TestQueryResponse:
+      type: object
+      description: A valid query response envelope.
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Widget"
+        paginationContext:
+          type: object
+          properties:
+            nextToken:
+              type: string
+            maxResults:
+              type: integer
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/StandardError"

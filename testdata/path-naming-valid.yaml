@@ -1,0 +1,52 @@
+openapi: "3.0.3"
+info:
+  title: Test API - Path Naming Valid
+  version: "1.0.0"
+paths:
+  /endpoint-groups/{groupId}:
+    get:
+      operationId: listEndpointGroups
+      summary: kebab-case path (valid)
+      responses:
+        "200":
+          description: OK
+  /systems/{systemId}/file-shares:
+    get:
+      operationId: listFileShares
+      summary: kebab-case multi-segment path (valid)
+      responses:
+        "200":
+          description: OK
+  /filesystems:
+    post:
+      operationId: createFilesystem
+      summary: Single word path (valid)
+      responses:
+        "200":
+          description: OK
+  /{prefix:.*}/filesystems/{fsid}:
+    get:
+      operationId: getFilesystem
+      summary: Path with regex parameter (valid)
+      responses:
+        "200":
+          description: OK
+  /.well-known/openid-configuration:
+    get:
+      operationId: getOpenIDConfiguration
+      summary: Standard well-known path (valid - excluded from kebab-case check)
+      responses:
+        "200":
+          description: OK
+  /.well-known/jwks.json:
+    get:
+      operationId: getJWKS
+      summary: Standard JWKS path (valid - excluded from kebab-case check)
+      responses:
+        "200":
+          description: OK
+components:
+  schemas:
+    Placeholder:
+      type: object
+      description: Placeholder schema

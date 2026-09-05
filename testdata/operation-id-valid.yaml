@@ -1,0 +1,36 @@
+openapi: "3.0.3"
+info:
+  title: Test API - Operation ID Valid
+  version: "1.0.0"
+paths:
+  /endpoints:
+    get:
+      operationId: listEndpoints
+      summary: camelCase operationId (valid)
+      responses:
+        "200":
+          description: OK
+    post:
+      operationId: createEndpoint
+      summary: camelCase operationId (valid)
+      responses:
+        "201":
+          description: Created
+  /endpoints/{endpointId}:
+    get:
+      operationId: getEndpoint
+      summary: camelCase operationId (valid)
+      responses:
+        "200":
+          description: OK
+    delete:
+      operationId: deleteEndpoint
+      summary: camelCase operationId (valid)
+      responses:
+        "204":
+          description: No Content
+components:
+  schemas:
+    Placeholder:
+      type: object
+      description: Placeholder schema

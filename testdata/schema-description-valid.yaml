@@ -1,0 +1,32 @@
+openapi: "3.0.3"
+info:
+  title: Test API - Schema Description Valid
+  version: "1.0.0"
+paths:
+  /test:
+    get:
+      operationId: getTest
+      summary: Test endpoint
+      responses:
+        "200":
+          description: OK
+components:
+  schemas:
+    CreateWidgetRequest:
+      type: object
+      description: Request payload for creating a new widget.
+      properties:
+        name:
+          type: string
+    WidgetResponse:
+      type: object
+      description: Response containing widget details.
+      properties:
+        id:
+          type: string
+    EndpointGroup:
+      type: object
+      description: A logical grouping of endpoints.
+      properties:
+        label:
+          type: string

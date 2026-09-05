@@ -1,0 +1,59 @@
+openapi: "3.0.3"
+info:
+  title: Test API - Request/Response Example Valid
+  version: "1.0.0"
+paths:
+  /widgets:
+    post:
+      operationId: createWidget
+      summary: Create a widget (has examples on request and response)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+            example:
+              name: "my-widget"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+              example:
+                id: "w-abc123"
+    get:
+      operationId: listWidgets
+      summary: List widgets (uses examples map)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+              examples:
+                singleWidget:
+                  value:
+                    - id: "w-abc123"
+  /widgets/{widgetId}:
+    delete:
+      operationId: deleteWidget
+      summary: Delete widget (no content body, no example needed)
+      responses:
+        "204":
+          description: No Content
+components:
+  schemas:
+    Placeholder:
+      type: object
+      description: Placeholder schema

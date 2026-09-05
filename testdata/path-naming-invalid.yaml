@@ -1,0 +1,38 @@
+openapi: "3.0.3"
+info:
+  title: Test API - Path Naming Invalid
+  version: "1.0.0"
+paths:
+  /endpointGroups/{groupId}:
+    get:
+      operationId: getEndpointGroup
+      summary: camelCase path segment (invalid)
+      responses:
+        "200":
+          description: OK
+  /systems/{systemId}/deviceList:
+    get:
+      operationId: getDeviceList
+      summary: camelCase path segment (invalid)
+      responses:
+        "200":
+          description: OK
+  /endpoint-groups/{groupId}:
+    get:
+      operationId: listEndpointGroups
+      summary: kebab-case path segment (valid)
+      responses:
+        "200":
+          description: OK
+  /{prefix:.*}/filesystems/{fsid}:
+    get:
+      operationId: getFilesystem
+      summary: Path with regex parameter (valid - parameters excluded)
+      responses:
+        "200":
+          description: OK
+components:
+  schemas:
+    Placeholder:
+      type: object
+      description: Placeholder schema
