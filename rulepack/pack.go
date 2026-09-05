@@ -264,7 +264,13 @@ func (p *Program) Run(ctx context.Context, root string, documents []*interfaces.
 		if a.RuleID != b.RuleID {
 			return a.RuleID < b.RuleID
 		}
-		return a.Message < b.Message
+		if a.Message != b.Message {
+			return a.Message < b.Message
+		}
+		if a.Pointer != b.Pointer {
+			return a.Pointer < b.Pointer
+		}
+		return a.Context < b.Context
 	})
 	return diagnostics, nil
 }
