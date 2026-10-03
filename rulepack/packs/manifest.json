@@ -1,5 +1,10 @@
 [
   {
+    "name": "google-defaults",
+    "file": "google-defaults.yaml",
+    "sha256": "af4ced2a54b6963a42832d96e3c1ef0376adddda4cb366357c6978dcbb2b98e7"
+  },
+  {
     "name": "openapi:conventions",
     "file": "openapi-conventions.yaml",
     "sha256": "584f9b4b8993e65817aaef000b73092a498dbc9a6b88742ae056b753190da544"
@@ -13,6 +18,11 @@
     "name": "openapi:documentation",
     "file": "openapi-documentation.yaml",
     "sha256": "c7f0effd8effc88a8f1fbcb31144b8c1bd75bfb675e92ff2440b74105a5bda14"
+  },
+  {
+    "name": "openapi:google",
+    "file": "openapi-google.yaml",
+    "sha256": "c76c494976a2090464140b15f8ef548cb991b1e5d1a18dcefeb9b7622520d84e"
   },
   {
     "name": "openapi:maintenance",

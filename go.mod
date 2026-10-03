@@ -5,6 +5,7 @@ go 1.24.2
 require (
 	github.com/pb33f/libopenapi v0.33.11
 	github.com/santhosh-tekuri/jsonschema/v6 v6.0.2
+	go.yaml.in/yaml/v4 v4.0.0-rc.4
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -13,7 +14,6 @@ require (
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/pb33f/jsonpath v0.8.1 // indirect
 	github.com/pb33f/ordered-map/v2 v2.3.0 // indirect
-	go.yaml.in/yaml/v4 v4.0.0-rc.4 // indirect
 	golang.org/x/sync v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 )

@@ -1,0 +1,50 @@
+version: 1
+rules:
+  - id: google.method-name
+    check: google.method-name
+    severity: warning
+  - id: google.http-method
+    check: google.http-method
+    severity: warning
+  - id: google.version-path
+    check: google.version-path
+    severity: warning
+  - id: google.standard-path
+    check: google.standard-path
+    severity: warning
+  - id: google.request-body
+    check: google.request-body
+    severity: warning
+  - id: google.resource-response
+    check: google.resource-response
+    severity: warning
+  - id: google.list-request
+    check: google.list-request
+    severity: warning
+  - id: google.list-response
+    check: google.list-response
+    severity: warning
+  - id: google.update-mask
+    check: google.update-mask
+    severity: warning
+  - id: google.custom-method
+    check: google.custom-method
+    severity: warning
+  - id: google.resource-name
+    check: google.resource-name
+    severity: warning
+  - id: google.field-names
+    check: google.field-names
+    severity: warning
+  - id: google.boolean-names
+    check: google.boolean-names
+    severity: warning
+  - id: google.timestamp
+    check: google.timestamp
+    severity: warning
+  - id: google.error-response
+    check: google.error-response
+    severity: warning
+  - id: google.long-running-response
+    check: google.long-running-response
+    severity: warning

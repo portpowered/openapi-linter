@@ -10,7 +10,7 @@ import (
 
 //go:embed packs/*
 var embeddedPacks embed.FS
-var packFiles = map[string]string{"openapi:conventions": "openapi-conventions.yaml", "openapi:core": "openapi-core.yaml", "openapi:documentation": "openapi-documentation.yaml", "openapi:maintenance": "openapi-maintenance.yaml", "openapi:publication": "openapi-publication.yaml", "openapi:recommended": "openapi-recommended.yaml", "openapi:security": "openapi-security.yaml", "portos-defaults": "portos-defaults.yaml", "portos:internal": "portos-internal.yaml", "schema:conventions": "schema-conventions.yaml"}
+var packFiles = map[string]string{"openapi:google": "openapi-google.yaml", "google-defaults": "google-defaults.yaml", "openapi:conventions": "openapi-conventions.yaml", "openapi:core": "openapi-core.yaml", "openapi:documentation": "openapi-documentation.yaml", "openapi:maintenance": "openapi-maintenance.yaml", "openapi:publication": "openapi-publication.yaml", "openapi:recommended": "openapi-recommended.yaml", "openapi:security": "openapi-security.yaml", "portos-defaults": "portos-defaults.yaml", "portos:internal": "portos-internal.yaml", "schema:conventions": "schema-conventions.yaml"}
 
 func DefaultKind() string       { return "openapi" }
 func DefaultPresetName() string { return "openapi:recommended" }
@@ -69,10 +69,23 @@ func Preset(name string) (Pack, bool) {
 	return p, true
 }
 func cloneNode(n yaml.Node) yaml.Node {
-	n.Content = append([]*yaml.Node(nil), n.Content...)
-	for i, child := range n.Content {
-		copy := cloneNode(*child)
-		n.Content[i] = &copy
+	memo := map[*yaml.Node]*yaml.Node{}
+	var clone func(*yaml.Node) *yaml.Node
+	clone = func(source *yaml.Node) *yaml.Node {
+		if source == nil {
+			return nil
+		}
+		if copied, ok := memo[source]; ok {
+			return copied
+		}
+		copied := *source
+		memo[source] = &copied
+		copied.Content = nil
+		for _, child := range source.Content {
+			copied.Content = append(copied.Content, clone(child))
+		}
+		copied.Alias = clone(source.Alias)
+		return &copied
 	}
-	return n
+	return *clone(&n)
 }

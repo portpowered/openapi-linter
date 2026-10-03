@@ -766,7 +766,7 @@ func (c apiCheck) Analyze(ctx context.Context, pass *linter.Pass) {
 					isSchema := strings.Contains(s.ptr, "/schemas/") || strings.HasSuffix(s.ptr, "/schema")
 					is31 := strings.HasPrefix(root.child("openapi").value(), "3.1")
 					for _, p := range s.pairs() {
-						if p.key != "$ref" && !(is31 && (isSchema || p.key == "summary" || p.key == "description")) {
+						if p.key != "$ref" && (!is31 || (!isSchema && p.key != "summary" && p.key != "description")) {
 							emit(p.value, "reference sibling is not supported in this version/object")
 						}
 					}

@@ -51,7 +51,7 @@ func registerAdditional(registry *Registry) error {
 		if !strings.Contains(d.ID, ".") {
 			continue
 		}
-		if !(strings.HasPrefix(d.ID, "markdown.") || strings.HasPrefix(d.ID, "text.") || strings.HasPrefix(d.ID, "openapi.") || strings.HasPrefix(d.ID, "schema.") || strings.HasPrefix(d.ID, "portos.")) {
+		if !strings.HasPrefix(d.ID, "openapi.") && !strings.HasPrefix(d.ID, "schema.") && !strings.HasPrefix(d.ID, "portos.") {
 			continue
 		}
 		d.Kind = "openapi"
@@ -72,9 +72,6 @@ func registerAdditional(registry *Registry) error {
 		if d.ID == "openapi.operation-id" {
 			d.Defaults = map[string]any{"required": true}
 		}
-		if d.ID == "markdown.trailing-whitespace" || d.ID == "markdown.formatting" {
-			d.Defaults["allow-hard-breaks"] = true
-		}
 		typ := reflect.TypeOf(defaults)
 		types := map[string]string{}
 		for i := 0; i < typ.NumField(); i++ {
@@ -87,6 +84,9 @@ func registerAdditional(registry *Registry) error {
 			if d.Options[key] == "" {
 				d.Options[key] = "See rule-pack reference"
 			}
+		}
+		if d.ID == "openapi.operation-id" {
+			d.Options = map[string]string{"required": "bool", "pattern": "string"}
 		}
 		d.Presets = []string{}
 		for _, name := range PresetNames() {
@@ -109,11 +109,11 @@ func registerAdditional(registry *Registry) error {
 				d.Severity = string(rule.Severity)
 			}
 		}
-		d.Fixable = d.ID == "markdown.final-newline" || d.ID == "markdown.trailing-whitespace" || d.ID == "markdown.link-relocation" || d.ID == "markdown.doc-id-unique"
+		d.Fixable = false
 
 		if e := registry.SetDescriptor(d); e != nil {
 			return e
 		}
 	}
-	return nil
+	return registerGoogle(registry)
 }

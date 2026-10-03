@@ -6,3 +6,5 @@
 /dist/
 /openapilint
 /openapilint.exe
+
+__pycache__/

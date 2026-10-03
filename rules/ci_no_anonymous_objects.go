@@ -16,6 +16,9 @@ func (r *NoAnonymousObjects) Name() string {
 }
 
 func (r *NoAnonymousObjects) VisitSchema(filePath string, schema *linter.SchemaDocument) []linter.Violation {
+	if schema == nil {
+		return nil
+	}
 	// Start walking from the root-level properties.
 	// The root object itself is named (by the file), so we only check nested properties.
 	propsRaw, ok := schema.Content["properties"]

@@ -160,3 +160,5 @@ Examples are checked by a JSON Schema validator. 3.0 nullable and exclusive boun
 Inputs and local reference targets stay within root, including symlinks. Remote/absolute targets fail. Resolved external findings are attributed to the source reference where available, with the target location in the message. Configured checks receive only selected inputs, while references can be read inside root; excluded files are not independently emitted as findings. Custom Go code is trusted and must respect its own boundary.
 
 OpenAPI has no automatic semantic fixes. `Diagnostic.Pointer` and `Line` locate findings; unavailable source locations remain zero rather than invented. Parse/reference failures and failed analysis return exit 2 and cannot be hidden by a baseline or suppression.
+
+See [Google API rules and analysis](google-api.md) for `openapi:google`, `google-defaults`, 16 checks and their five paired contract groups. These are opt-in REST projections of the AIPs.

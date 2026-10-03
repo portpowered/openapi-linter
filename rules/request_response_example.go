@@ -26,6 +26,9 @@ func (r *RequestResponseRequiresExample) VisitPath(_ string, _ *v3high.PathItem)
 }
 
 func (r *RequestResponseRequiresExample) VisitOperation(path string, method string, op *v3high.Operation) []linter.Violation {
+	if op == nil {
+		return nil
+	}
 	var violations []linter.Violation
 	location := fmt.Sprintf("%s %s", method, path)
 
@@ -47,7 +50,7 @@ func (r *RequestResponseRequiresExample) VisitOperation(path string, method stri
 	if op.Responses != nil && op.Responses.Codes != nil {
 		for codePair := op.Responses.Codes.First(); codePair != nil; codePair = codePair.Next() {
 			resp := codePair.Value()
-			if resp.Content == nil {
+			if resp == nil || resp.Content == nil {
 				continue
 			}
 			for mtPair := resp.Content.First(); mtPair != nil; mtPair = mtPair.Next() {
@@ -77,6 +80,9 @@ func (r *RequestResponseRequiresExample) VisitOperation(path string, method stri
 // mediaTypeHasExample returns true if the media type has either an Example
 // node or a non-empty Examples map.
 func mediaTypeHasExample(mt *v3high.MediaType) bool {
+	if mt == nil {
+		return false
+	}
 	if mt.Example != nil {
 		return true
 	}

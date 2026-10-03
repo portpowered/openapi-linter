@@ -19,6 +19,9 @@ func (r *SchemaRequiresDescription) Name() string {
 }
 
 func (r *SchemaRequiresDescription) VisitSchema(schemaName string, schema *base.Schema) []linter.Violation {
+	if schema == nil {
+		return nil
+	}
 	if strings.TrimSpace(schema.Description) == "" {
 		return []linter.Violation{{
 			RuleName: r.Name(),

@@ -32,6 +32,9 @@ func (r *OperationIDNamingConvention) VisitPath(_ string, _ *v3high.PathItem) []
 }
 
 func (r *OperationIDNamingConvention) VisitOperation(path string, method string, op *v3high.Operation) []linter.Violation {
+	if op == nil {
+		return nil
+	}
 	var violations []linter.Violation
 
 	if op.OperationId == "" {

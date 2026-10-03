@@ -15,6 +15,9 @@ func (r *PropertyCamelCase) Name() string {
 }
 
 func (r *PropertyCamelCase) VisitSchema(filePath string, schema *linter.SchemaDocument) []linter.Violation {
+	if schema == nil {
+		return nil
+	}
 	propsRaw, ok := schema.Content["properties"]
 	if !ok {
 		return nil

@@ -20,7 +20,7 @@ var Version = "dev"
 func Run(ctx context.Context, args []string, out, errOut io.Writer) int {
 	registry := rulepack.NewRegistry()
 	if err := rulepack.RegisterStock(registry); err != nil {
-		fmt.Fprintln(errOut, err)
+		_, _ = fmt.Fprintln(errOut, err)
 		return 2
 	}
 	return RunWithRegistry(ctx, args, out, errOut, registry)
@@ -29,7 +29,7 @@ func RunWithRegistry(ctx context.Context, args []string, out, errOut io.Writer, 
 	var baselineErr error
 	args, baselineErr = rulepack.BaselineArgs(args)
 	if baselineErr != nil {
-		fmt.Fprintln(errOut, baselineErr)
+		_, _ = fmt.Fprintln(errOut, baselineErr)
 		return 2
 	}
 	if handled, code := rulepack.Manage(args, ".openapilint.yaml", registry, out, errOut); handled {
@@ -51,10 +51,12 @@ func RunWithRegistry(ctx context.Context, args []string, out, errOut io.Writer, 
 		return 2
 	}
 	if *version {
-		fmt.Fprintln(out, "openapilint", Version)
+		if _, err := fmt.Fprintln(out, "openapilint", Version); err != nil {
+			return 2
+		}
 		return 0
 	}
-	fail := func(err error) int { fmt.Fprintln(errOut, err); return 2 }
+	fail := func(err error) int { _, _ = fmt.Fprintln(errOut, err); return 2 }
 	if *failOn != "error" && *failOn != "warning" {
 		return fail(fmt.Errorf("fail-on must be error or warning"))
 	}
@@ -152,7 +154,9 @@ func RunWithRegistry(ctx context.Context, args []string, out, errOut io.Writer, 
 		if err = rulepack.WriteBaseline(*baselineWrite, *root, diagnostics, *baselineOverwrite); err != nil {
 			return fail(err)
 		}
-		fmt.Fprintf(out, "Baseline written to %s\n", *baselineWrite)
+		if _, err := fmt.Fprintf(out, "Baseline written to %s\n", *baselineWrite); err != nil {
+			return 2
+		}
 		return 0
 	}
 	if *baseline != "" {
@@ -161,13 +165,16 @@ func RunWithRegistry(ctx context.Context, args []string, out, errOut io.Writer, 
 		if err != nil {
 			return fail(err)
 		}
-		fmt.Fprintf(errOut, "%d known findings in baseline\n", known)
+		if _, err := fmt.Fprintf(errOut, "%d known findings in baseline\n", known); err != nil {
+			return 2
+		}
 	}
-	if *format == "json" {
+	switch *format {
+	case "json":
 		err = json.NewEncoder(out).Encode(diagnostics)
-	} else if *format == "sarif" {
+	case "sarif":
 		err = json.NewEncoder(out).Encode(rulepack.SARIF(diagnostics))
-	} else {
+	default:
 		for _, d := range diagnostics {
 			if _, err = fmt.Fprintf(out, "%s:%d: %s: %s: %s (%s)\n", d.Path, d.Line, d.Severity, d.RuleID, d.Message, d.Pointer); err != nil {
 				break

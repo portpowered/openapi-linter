@@ -1,5 +1,213 @@
 [
   {
+    "category": "google",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "google-defaults",
+      "openapi:google"
+    ],
+    "id": "google.boolean-names",
+    "title": "boolean names",
+    "kind": "openapi",
+    "guidance": "See docs/google-api.md for AIP sources, examples, paired checks, and REST projection limits."
+  },
+  {
+    "category": "google",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "google-defaults",
+      "openapi:google"
+    ],
+    "id": "google.custom-method",
+    "title": "custom method",
+    "kind": "openapi",
+    "guidance": "See docs/google-api.md for AIP sources, examples, paired checks, and REST projection limits."
+  },
+  {
+    "category": "google",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "google-defaults",
+      "openapi:google"
+    ],
+    "id": "google.error-response",
+    "title": "error response",
+    "kind": "openapi",
+    "guidance": "See docs/google-api.md for AIP sources, examples, paired checks, and REST projection limits."
+  },
+  {
+    "category": "google",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "google-defaults",
+      "openapi:google"
+    ],
+    "id": "google.field-names",
+    "title": "field names",
+    "kind": "openapi",
+    "guidance": "See docs/google-api.md for AIP sources, examples, paired checks, and REST projection limits."
+  },
+  {
+    "category": "google",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "google-defaults",
+      "openapi:google"
+    ],
+    "id": "google.http-method",
+    "title": "http method",
+    "kind": "openapi",
+    "guidance": "See docs/google-api.md for AIP sources, examples, paired checks, and REST projection limits."
+  },
+  {
+    "category": "google",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "google-defaults",
+      "openapi:google"
+    ],
+    "id": "google.list-request",
+    "title": "list request",
+    "kind": "openapi",
+    "guidance": "See docs/google-api.md for AIP sources, examples, paired checks, and REST projection limits."
+  },
+  {
+    "category": "google",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "google-defaults",
+      "openapi:google"
+    ],
+    "id": "google.list-response",
+    "title": "list response",
+    "kind": "openapi",
+    "guidance": "See docs/google-api.md for AIP sources, examples, paired checks, and REST projection limits."
+  },
+  {
+    "category": "google",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "google-defaults",
+      "openapi:google"
+    ],
+    "id": "google.long-running-response",
+    "title": "long running response",
+    "kind": "openapi",
+    "guidance": "See docs/google-api.md for AIP sources, examples, paired checks, and REST projection limits."
+  },
+  {
+    "category": "google",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "google-defaults",
+      "openapi:google"
+    ],
+    "id": "google.method-name",
+    "title": "method name",
+    "kind": "openapi",
+    "guidance": "See docs/google-api.md for AIP sources, examples, paired checks, and REST projection limits."
+  },
+  {
+    "category": "google",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "google-defaults",
+      "openapi:google"
+    ],
+    "id": "google.request-body",
+    "title": "request body",
+    "kind": "openapi",
+    "guidance": "See docs/google-api.md for AIP sources, examples, paired checks, and REST projection limits."
+  },
+  {
+    "category": "google",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "google-defaults",
+      "openapi:google"
+    ],
+    "id": "google.resource-name",
+    "title": "resource name",
+    "kind": "openapi",
+    "guidance": "See docs/google-api.md for AIP sources, examples, paired checks, and REST projection limits."
+  },
+  {
+    "category": "google",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "google-defaults",
+      "openapi:google"
+    ],
+    "id": "google.resource-response",
+    "title": "resource response",
+    "kind": "openapi",
+    "guidance": "See docs/google-api.md for AIP sources, examples, paired checks, and REST projection limits."
+  },
+  {
+    "category": "google",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "google-defaults",
+      "openapi:google"
+    ],
+    "id": "google.standard-path",
+    "title": "standard path",
+    "kind": "openapi",
+    "guidance": "See docs/google-api.md for AIP sources, examples, paired checks, and REST projection limits."
+  },
+  {
+    "category": "google",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "google-defaults",
+      "openapi:google"
+    ],
+    "id": "google.timestamp",
+    "title": "timestamp",
+    "kind": "openapi",
+    "guidance": "See docs/google-api.md for AIP sources, examples, paired checks, and REST projection limits."
+  },
+  {
+    "category": "google",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "google-defaults",
+      "openapi:google"
+    ],
+    "id": "google.update-mask",
+    "title": "update mask",
+    "kind": "openapi",
+    "guidance": "See docs/google-api.md for AIP sources, examples, paired checks, and REST projection limits."
+  },
+  {
+    "category": "google",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "google-defaults",
+      "openapi:google"
+    ],
+    "id": "google.version-path",
+    "title": "version path",
+    "kind": "openapi",
+    "guidance": "See docs/google-api.md for AIP sources, examples, paired checks, and REST projection limits."
+  },
+  {
     "defaults": {
       "public-operations": []
     },
@@ -22,6 +230,7 @@
     "recommendedSeverity": "error",
     "fixable": false,
     "presets": [
+      "google-defaults",
       "openapi:core",
       "openapi:recommended",
       "portos-defaults"
@@ -52,6 +261,7 @@
     "recommendedSeverity": "warning",
     "fixable": false,
     "presets": [
+      "google-defaults",
       "openapi:recommended",
       "portos-defaults"
     ],
@@ -77,6 +287,7 @@
     "recommendedSeverity": "warning",
     "fixable": false,
     "presets": [
+      "google-defaults",
       "openapi:documentation",
       "openapi:recommended",
       "portos-defaults"
@@ -103,6 +314,7 @@
     "recommendedSeverity": "warning",
     "fixable": false,
     "presets": [
+      "google-defaults",
       "openapi:documentation",
       "openapi:recommended",
       "portos-defaults"
@@ -120,6 +332,7 @@
     "recommendedSeverity": "error",
     "fixable": false,
     "presets": [
+      "google-defaults",
       "openapi:core",
       "openapi:recommended",
       "portos-defaults"
@@ -128,8 +341,8 @@
     "title": "operation id",
     "kind": "openapi",
     "options": {
-      "pattern": "See rule-pack reference",
-      "required": "See rule-pack reference"
+      "pattern": "string",
+      "required": "bool"
     },
     "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
   },
@@ -138,6 +351,7 @@
     "recommendedSeverity": "error",
     "fixable": false,
     "presets": [
+      "google-defaults",
       "openapi:core",
       "openapi:recommended",
       "portos-defaults"
@@ -158,6 +372,7 @@
     "recommendedSeverity": "warning",
     "fixable": false,
     "presets": [
+      "google-defaults",
       "openapi:recommended",
       "portos-defaults"
     ],
@@ -174,6 +389,7 @@
     "recommendedSeverity": "warning",
     "fixable": false,
     "presets": [
+      "google-defaults",
       "openapi:documentation",
       "openapi:recommended",
       "portos-defaults"
@@ -210,6 +426,7 @@
     "recommendedSeverity": "warning",
     "fixable": false,
     "presets": [
+      "google-defaults",
       "openapi:documentation",
       "openapi:recommended",
       "portos-defaults"
@@ -224,6 +441,7 @@
     "recommendedSeverity": "error",
     "fixable": false,
     "presets": [
+      "google-defaults",
       "openapi:core",
       "openapi:recommended",
       "portos-defaults"
@@ -250,6 +468,7 @@
     "recommendedSeverity": "error",
     "fixable": false,
     "presets": [
+      "google-defaults",
       "openapi:core",
       "openapi:recommended",
       "portos-defaults"
@@ -264,6 +483,7 @@
     "recommendedSeverity": "error",
     "fixable": false,
     "presets": [
+      "google-defaults",
       "openapi:core",
       "openapi:recommended",
       "portos-defaults"
@@ -290,6 +510,7 @@
     "recommendedSeverity": "error",
     "fixable": false,
     "presets": [
+      "google-defaults",
       "openapi:core",
       "openapi:recommended",
       "portos-defaults"
@@ -304,6 +525,7 @@
     "recommendedSeverity": "warning",
     "fixable": false,
     "presets": [
+      "google-defaults",
       "openapi:documentation",
       "openapi:recommended",
       "portos-defaults"
@@ -318,6 +540,7 @@
     "recommendedSeverity": "warning",
     "fixable": false,
     "presets": [
+      "google-defaults",
       "openapi:documentation",
       "openapi:recommended",
       "portos-defaults"
@@ -344,6 +567,7 @@
     "recommendedSeverity": "error",
     "fixable": false,
     "presets": [
+      "google-defaults",
       "openapi:core",
       "openapi:recommended",
       "portos-defaults"
@@ -380,6 +604,7 @@
     "recommendedSeverity": "error",
     "fixable": false,
     "presets": [
+      "google-defaults",
       "openapi:core",
       "openapi:recommended",
       "portos-defaults"
@@ -394,6 +619,7 @@
     "recommendedSeverity": "error",
     "fixable": false,
     "presets": [
+      "google-defaults",
       "openapi:core",
       "openapi:recommended",
       "portos-defaults"
@@ -408,6 +634,7 @@
     "recommendedSeverity": "warning",
     "fixable": false,
     "presets": [
+      "google-defaults",
       "openapi:documentation",
       "openapi:recommended",
       "portos-defaults"

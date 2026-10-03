@@ -63,7 +63,7 @@ func (r *SchemaPropertyCamelCase) Name() string {
 func (r *SchemaPropertyCamelCase) VisitSchema(schemaName string, schema *base.Schema) []linter.Violation {
 	var violations []linter.Violation
 
-	if schema.Properties == nil {
+	if schema == nil || schema.Properties == nil {
 		return nil
 	}
 
