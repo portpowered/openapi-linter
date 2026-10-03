@@ -52,7 +52,7 @@
   {
     "name": "portos:internal",
     "file": "portos-internal.yaml",
-    "sha256": "6547a49feb8f9b7b0f17a16bfc74e477a1f6efa04c69039a480a95cf2a5c6839"
+    "sha256": "354942bd09195571d302c28a0220e72f63c52cc7d35f96e72aae69a9cb51df76"
   },
   {
     "name": "schema:conventions",

@@ -162,3 +162,5 @@ Inputs and local reference targets stay within root, including symlinks. Remote/
 OpenAPI has no automatic semantic fixes. `Diagnostic.Pointer` and `Line` locate findings; unavailable source locations remain zero rather than invented. Parse/reference failures and failed analysis return exit 2 and cannot be hidden by a baseline or suppression.
 
 See [Google API rules and analysis](google-api.md) for `openapi:google`, `google-defaults`, 16 checks and their five paired contract groups. These are opt-in REST projections of the AIPs.
+
+See [Portos response and schema contracts](portos-api.md) for the eight additional internal rules, shared errors and Sort objects, batch correlation shape, delete idempotency declaration, and service-test requirements.

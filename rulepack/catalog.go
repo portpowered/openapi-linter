@@ -30,6 +30,14 @@ func registerAdditional(registry *Registry) error {
 		"openapi.info-contact",
 		"openapi.info-license",
 		"openapi.pagination",
+		"portos.success-status",
+		"portos.etag-conflict",
+		"portos.error-contract",
+		"portos.path-kebab-case",
+		"portos.delete-idempotent",
+		"portos.version-prefix",
+		"portos.query-sorts",
+		"portos.batch-outcomes",
 		"portos.operation-vocabulary",
 		"portos.query-request",
 		"portos.async-response",
@@ -61,7 +69,7 @@ func registerAdditional(registry *Registry) error {
 		d.Title = strings.ReplaceAll(strings.SplitN(d.ID, ".", 2)[1], "-", " ")
 		d.Guidance = "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
 		d.Options = map[string]string{}
-		defaults := defaultOptions()
+		defaults := optionsFor(d.ID)
 		encoded, _ := yaml.Marshal(defaults)
 		allDefaults := map[string]any{}
 		_ = yaml.Unmarshal(encoded, &allDefaults)

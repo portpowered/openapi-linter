@@ -15,6 +15,8 @@ import (
 )
 
 type apiOptions struct {
+	Errors               string   `yaml:"errors-field"`
+	Sorts                string   `yaml:"sorts-field"`
 	Operations           []string `yaml:"operations"`
 	Modifiers            []string `yaml:"modifiers"`
 	QuerySchema          string   `yaml:"query-schema"`
@@ -46,7 +48,7 @@ func apiFactory(id string) Factory {
 		if e := validateCheckOptions(id, n); e != nil {
 			return nil, e
 		}
-		c := apiCheck{id: id, options: defaultOptions()}
+		c := apiCheck{id: id, options: optionsFor(id)}
 		if e := DecodeOptions(n, &c.options); e != nil {
 			return nil, e
 		}
@@ -56,6 +58,14 @@ func apiFactory(id string) Factory {
 		for _, v := range c.options.Classes {
 			if v != "2" && v != "3" && v != "4" && v != "5" {
 				return nil, fmt.Errorf("invalid response class %q", v)
+			}
+		}
+		if portosResponseRule(id) {
+			for _, key := range optionNames(id) {
+				values := map[string]string{"error-schema": c.options.ErrorSchema, "sorts-field": c.options.Sorts, "items-field": c.options.Items, "results-field": c.options.Results, "errors-field": c.options.Errors, "item-id-field": c.options.ItemID}
+				if strings.TrimSpace(values[key]) == "" {
+					return nil, fmt.Errorf("%s must not be blank", key)
+				}
 			}
 		}
 		if id == "openapi.pagination" && len(c.options.CollectionOperations) == 0 {
@@ -346,6 +356,10 @@ func classify(op operation, options apiOptions) (base string, batch, async bool)
 }
 
 func (c apiCheck) Analyze(ctx context.Context, pass *linter.Pass) {
+	if portosResponseRule(c.id) {
+		c.analyzePortosResponses(ctx, pass)
+		return
+	}
 	for _, doc := range pass.Documents {
 		if ctx.Err() != nil {
 			return
@@ -791,7 +805,7 @@ func (c apiCheck) Analyze(ctx context.Context, pass *linter.Pass) {
 							}
 						}
 					}
-					if c.id == "portos.open-enums" {
+					if c.id == "portos.open-enums" && !portosFixedEnum(s) {
 						if s.child("enum").n != nil {
 							emit(s, "open enums must use x-extensible-enum instead of closed enum")
 						}
@@ -914,7 +928,7 @@ func (c apiCheck) Analyze(ctx context.Context, pass *linter.Pass) {
 }
 
 func defaultOptions() apiOptions {
-	return apiOptions{Operations: []string{"List", "Send", "Delete", "Query", "Get", "Modify"}, Modifiers: []string{"Batch", "Async"}, QuerySchema: "Query", NameSchema: "NameValue", DescriptionSchema: "DescriptionValue", AsyncSchema: "AsyncIdentifier", MaxResults: "maxResults", NextToken: "nextToken", Results: "results", Pagination: "paginationContext", Items: "items", ItemID: "id", Protocols: []string{"https"}, Classes: []string{"2", "3"}}
+	return apiOptions{Errors: "errors", Sorts: "sorts", Operations: []string{"List", "Send", "Delete", "Query", "Get", "Modify"}, Modifiers: []string{"Batch", "Async"}, QuerySchema: "Query", NameSchema: "NameValue", DescriptionSchema: "DescriptionValue", AsyncSchema: "AsyncIdentifier", MaxResults: "maxResults", NextToken: "nextToken", Results: "results", Pagination: "paginationContext", Items: "items", ItemID: "id", Protocols: []string{"https"}, Classes: []string{"2", "3"}}
 }
 
 func enumTypeMatches(schema, value site) bool {

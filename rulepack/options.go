@@ -7,6 +7,12 @@ import (
 
 func optionNames(id string) []string {
 	switch id {
+	case "portos.error-contract":
+		return []string{"error-schema"}
+	case "portos.query-sorts":
+		return []string{"sorts-field"}
+	case "portos.batch-outcomes":
+		return []string{"items-field", "results-field", "errors-field", "item-id-field", "error-schema"}
 	case "openapi.operation-id":
 		return []string{"required", "pattern"}
 	case "openapi.operation-success-response":

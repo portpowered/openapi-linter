@@ -73,3 +73,5 @@ Individual targets are `make test`, `make lint`, `make coverage`, `make coverage
 CI runs the same coverage/lint policy on Linux, macOS and Windows for each supported Go version. The explicit `linters.default: standard` configuration enables errcheck, govet, ineffassign, staticcheck and unused, with no preset issue exclusions. See the [official standard linter list](https://golangci-lint.run/docs/welcome/quick-start/) and [pinned release](https://github.com/golangci/golangci-lint/releases/tag/v2.14.0). Lint failures are fixed rather than baselined.
 
 See [Google API rules and analysis](docs/google-api.md) for `openapi:google`, `google-defaults`, 16 checks and their five paired contract groups. These are opt-in REST projections of the AIPs.
+
+The [Portos response contracts](docs/portos-api.md) enforce 200/202 success statuses, 409 ETag conflicts, canonical error bodies, versioned kebab-case paths, declared delete idempotency, structured sorts, and synchronous batch outcomes. They are included in `portos-defaults`.

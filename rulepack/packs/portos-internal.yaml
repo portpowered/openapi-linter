@@ -39,3 +39,27 @@ rules:
     - id: portos.description-schema
       check: portos.description-schema
       severity: error
+    - id: portos.success-status
+      check: portos.success-status
+      severity: error
+    - id: portos.etag-conflict
+      check: portos.etag-conflict
+      severity: error
+    - id: portos.error-contract
+      check: portos.error-contract
+      severity: error
+    - id: portos.path-kebab-case
+      check: portos.path-kebab-case
+      severity: error
+    - id: portos.delete-idempotent
+      check: portos.delete-idempotent
+      severity: error
+    - id: portos.version-prefix
+      check: portos.version-prefix
+      severity: error
+    - id: portos.query-sorts
+      check: portos.query-sorts
+      severity: error
+    - id: portos.batch-outcomes
+      check: portos.batch-outcomes
+      severity: error

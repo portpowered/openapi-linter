@@ -7,7 +7,7 @@ tags:
   - name: Widgets
     description: Widget operations.
 paths:
-  /widgets/query:
+  /v1/widgets/query:
     description: Query widgets with the shared recursive query model.
     post:
       operationId: widgetQuery
@@ -24,6 +24,10 @@ paths:
               properties:
                 query:
                   $ref: '#/components/schemas/Query'
+                sorts:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Sort'
                 paginationContext:
                   $ref: '#/components/schemas/PaginationContext'
             example:
@@ -51,8 +55,96 @@ paths:
                     description: {value: An example widget}
                     createdAt: '2026-10-02T12:00:00Z'
                 paginationContext: {nextToken: '', maxResults: 20}
+        '400':
+          description: The request is invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example: {code: INVALID_QUERY, message: Invalid query field, type: query.invalid-field, family: 400}
+  /v1/widgets/{id}:
+    description: Modify or remove an existing widget.
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: The widget resource ID.
+        schema: {type: string}
+    patch:
+      operationId: widgetModify
+      summary: Modify a widget
+      description: Apply a modification only when the request ETag matches.
+      parameters:
+        - name: If-Match
+          in: header
+          required: true
+          description: The resource ETag observed by the caller.
+          schema: {type: string}
+      responses:
+        '200':
+          description: Modification completed.
+        '409':
+          description: The request ETag conflicts with the current resource version.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ErrorResponse'}
+              example: {code: ETAG_CONFLICT, message: Resource changed, type: etag.conflict, family: 400}
+    delete:
+      operationId: widgetDelete
+      summary: Delete a widget
+      description: Remove the widget; repeat requests succeed when it is already absent.
+      x-portos-idempotent: true
+      responses:
+        '200':
+          description: The widget is absent; no response body is needed.
+  /v1/widgets/batch/modify:
+    description: Modify several widgets while recording individual outcomes.
+    post:
+      operationId: widgetBatchModify
+      summary: Modify widgets in a batch
+      description: Return successes and failures correlated by each request resource ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/BatchRequest'}
+            example: {items: [{id: widget1}, {id: widget2}]}
+      responses:
+        '200':
+          description: Completed batch with separate success and failure lists.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/BatchResponse'}
+              example:
+                results: [{id: widget1}]
+                errors:
+                  - id: widget2
+                    error: {code: ETAG_CONFLICT, message: Resource changed, type: etag.conflict, family: 400}
 components:
   schemas:
+    ErrorResponse:
+      type: object
+      description: Shared error details for every client and server failure.
+      required: [code, message, type, family]
+      properties:
+        code: {type: string}
+        message: {type: string}
+        type: {type: string}
+        family:
+          type: integer
+          enum: [400, 500]
+          x-enum-varnames: [CLIENT_ERROR, SERVER_ERROR]
+    Sort:
+      type: object
+      description: A field key and its sorting direction.
+      additionalProperties: false
+      required: [direction, key]
+      properties:
+        direction:
+          type: string
+          enum: [ASCENDING, DESCENDING]
+          x-enum-varnames: [ASCENDING, DESCENDING]
+        key: {type: string}
     Query:
       type: object
       description: The canonical recursive Portos query graph.
@@ -114,3 +206,35 @@ components:
           type: string
           x-extensible-enum: [ACTIVE, INACTIVE]
           x-enum-varnames: [ACTIVE, INACTIVE]
+    BatchRequest:
+      type: object
+      description: The resource IDs of the items to modify.
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            required: [id]
+            properties:
+              id: {type: string}
+    BatchResponse:
+      type: object
+      description: Successes and failures correlated by request resource ID.
+      required: [results, errors]
+      properties:
+        results:
+          type: array
+          items:
+            type: object
+            required: [id]
+            properties:
+              id: {type: string}
+        errors:
+          type: array
+          items:
+            type: object
+            required: [id, error]
+            properties:
+              id: {type: string}
+              error: {$ref: '#/components/schemas/ErrorResponse'}
