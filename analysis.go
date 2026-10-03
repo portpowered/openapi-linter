@@ -73,6 +73,8 @@ type Diagnostic struct {
 	Path     string
 	Pointer  string
 	Line     int
+	CheckID  string
+	Origin   string
 	RuleID   string
 	Message  string
 	Severity Severity

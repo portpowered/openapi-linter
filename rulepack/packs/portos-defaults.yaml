@@ -1,0 +1,3 @@
+version: 1
+extends: [openapi:recommended, portos:internal]
+rules: []

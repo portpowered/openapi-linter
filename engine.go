@@ -2,7 +2,6 @@ package linter
 
 import (
 	v3high "github.com/pb33f/libopenapi/datamodel/high/v3"
-	"sort"
 	"strings"
 )
 
@@ -50,56 +49,47 @@ func (e *Engine) visitSchemas(doc *v3high.Document) []Violation {
 }
 
 func (e *Engine) visitPaths(doc *v3high.Document) []Violation {
-	var violations []Violation
-
-	if doc.Paths == nil {
-		return nil
-	}
-
-	for pair := doc.Paths.PathItems.First(); pair != nil; pair = pair.Next() {
-		pathStr := pair.Key()
-		pathItem := pair.Value()
-
+	out := []Violation{}
+	active := map[*v3high.PathItem]bool{}
+	var visit func(string, string, *v3high.PathItem)
+	visit = func(path, pointer string, item *v3high.PathItem) {
+		if item == nil || active[item] {
+			return
+		}
+		active[item] = true
+		defer delete(active, item)
 		for _, rule := range e.rules {
-			violations = append(violations, located(rule.VisitPath(pathStr, pathItem), "#/paths/"+PointerSegment(pathStr))...)
+			out = append(out, located(rule.VisitPath(path, item), pointer)...)
 		}
-
-		violations = append(violations, e.visitOperations(pathStr, pathItem)...)
-	}
-
-	return violations
-}
-
-func (e *Engine) visitOperations(path string, pathItem *v3high.PathItem) []Violation {
-	var violations []Violation
-
-	operations := map[string]*v3high.Operation{
-		"GET":     pathItem.Get,
-		"POST":    pathItem.Post,
-		"PUT":     pathItem.Put,
-		"PATCH":   pathItem.Patch,
-		"DELETE":  pathItem.Delete,
-		"HEAD":    pathItem.Head,
-		"OPTIONS": pathItem.Options,
-		"TRACE":   pathItem.Trace,
-	}
-
-	methods := make([]string, 0, len(operations))
-	for method := range operations {
-		methods = append(methods, method)
-	}
-	sort.Strings(methods)
-	for _, method := range methods {
-		op := operations[method]
-		if op == nil {
-			continue
-		}
-		for _, rule := range e.rules {
-			violations = append(violations, located(rule.VisitOperation(path, method, op), "#/paths/"+PointerSegment(path)+"/"+strings.ToLower(method))...)
+		for pair := item.GetOperations().First(); pair != nil; pair = pair.Next() {
+			method, op := pair.Key(), pair.Value()
+			opPointer := pointer + "/" + strings.ToLower(method)
+			for _, rule := range e.rules {
+				out = append(out, located(rule.VisitOperation(path, strings.ToUpper(method), op), opPointer)...)
+			}
+			if op.Callbacks != nil {
+				for callback := op.Callbacks.First(); callback != nil; callback = callback.Next() {
+					if callback.Value().Expression == nil {
+						continue
+					}
+					for expression := callback.Value().Expression.First(); expression != nil; expression = expression.Next() {
+						visit(expression.Key(), opPointer+"/callbacks/"+PointerSegment(callback.Key())+"/"+PointerSegment(expression.Key()), expression.Value())
+					}
+				}
+			}
 		}
 	}
-
-	return violations
+	if doc.Paths != nil && doc.Paths.PathItems != nil {
+		for pair := doc.Paths.PathItems.First(); pair != nil; pair = pair.Next() {
+			visit(pair.Key(), "#/paths/"+PointerSegment(pair.Key()), pair.Value())
+		}
+	}
+	if doc.Webhooks != nil {
+		for pair := doc.Webhooks.First(); pair != nil; pair = pair.Next() {
+			visit(pair.Key(), "#/webhooks/"+PointerSegment(pair.Key()), pair.Value())
+		}
+	}
+	return out
 }
 
 func located(violations []Violation, pointer string) []Violation {

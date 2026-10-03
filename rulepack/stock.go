@@ -6,6 +6,7 @@ import (
 	linter "github.com/portpowered/openapi-linter"
 	"github.com/portpowered/openapi-linter/rules"
 	"gopkg.in/yaml.v3"
+	"path/filepath"
 	"regexp"
 )
 
@@ -61,11 +62,12 @@ func RegisterStock(registry *Registry) error {
 			return err
 		}
 	}
-	return registry.Register("openapi.operation-id", newOperationID)
+	if err := registry.Register("openapi.operation-id", newOperationID); err != nil {
+		return err
+	}
+	return registerAdditional(registry)
 }
-func DefaultPack() Pack {
-	return Pack{Version: 1, Rules: []Rule{{ID: "openapi.operation-id", Check: "openapi.operation-id"}}}
-}
+func DefaultPack() Pack { p, _ := Preset("openapi:recommended"); return p }
 
 type operationID struct {
 	required bool
@@ -98,23 +100,38 @@ func (c operationID) Analyze(ctx context.Context, pass *linter.Pass) {
 		if ctx.Err() != nil {
 			return
 		}
-		if doc.Model == nil || doc.Model.Paths == nil || doc.Model.Paths.PathItems == nil {
+		if doc.Model == nil {
 			continue
 		}
-		for pair := doc.Model.Paths.PathItems.First(); pair != nil; pair = pair.Next() {
-			for op := pair.Value().GetOperations().First(); op != nil; op = op.Next() {
-				id := op.Value().OperationId
-				message := ""
-				if id == "" && c.required {
-					message = "operation is missing a required operationId"
-				} else if id != "" && c.pattern != nil && !c.pattern.MatchString(id) {
-					message = fmt.Sprintf("operationId %q must match %s", id, c.pattern)
-				}
-				if message != "" {
-					pointer := "#/paths/" + linter.PointerSegment(pair.Key()) + "/" + op.Key()
-					pass.Report(linter.Diagnostic{Path: doc.Path, Pointer: pointer, Line: doc.Line(pointer), RuleID: c.ID(), Message: message, Severity: linter.SeverityError})
-				}
+		if doc.Root == nil {
+			pass.ReportError(fmt.Errorf("check %s requires source parsed with LoadDocument: %s", c.ID(), doc.Path))
+			continue
+		}
+		file, _ := filepath.Abs(doc.Path)
+		files := graphFiles(ctx)
+		files[file] = unwrap(doc.Root)
+		g := graph{root: pass.Root, files: files}
+		root := site{n: unwrap(doc.Root), file: file, ptr: "#"}
+		for _, op := range g.operations(root) {
+			id := op.op.child("operationId").value()
+			message := ""
+			if id == "" && c.required {
+				message = "operation is missing a required operationId"
+			} else if id != "" && c.pattern != nil && !c.pattern.MatchString(id) {
+				message = fmt.Sprintf("operationId %q must match %s", id, c.pattern)
 			}
+			if message != "" {
+				pointer := op.op.ptr
+				if op.op.file != file {
+					if source, ok := g.sources[op.op.file]; ok {
+						pointer = source.ptr
+					}
+				}
+				pass.Report(linter.Diagnostic{Path: doc.Path, Pointer: pointer, Line: doc.Line(pointer), RuleID: c.ID(), Message: message, Severity: linter.SeverityError})
+			}
+		}
+		if g.err != nil {
+			pass.ReportError(g.err)
 		}
 	}
 }

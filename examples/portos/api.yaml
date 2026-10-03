@@ -1,0 +1,116 @@
+openapi: 3.1.0
+info:
+  title: Portos query example
+  version: '1'
+  description: A complete example of the Portos query and pagination contracts.
+tags:
+  - name: Widgets
+    description: Widget operations.
+paths:
+  /widgets/query:
+    description: Query widgets with the shared recursive query model.
+    post:
+      operationId: widgetQuery
+      summary: Query widgets
+      description: Select widgets using a query graph and cursor pagination.
+      tags: [Widgets]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [query]
+              properties:
+                query:
+                  $ref: '#/components/schemas/Query'
+                paginationContext:
+                  $ref: '#/components/schemas/PaginationContext'
+            example:
+              query: {match: {key: name, value: alpha}}
+              paginationContext: {nextToken: '', maxResults: 20}
+      responses:
+        '200':
+          description: The matching widgets and pagination context.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [results, paginationContext]
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Widget'
+                  paginationContext:
+                    $ref: '#/components/schemas/PaginationContext'
+              example:
+                results:
+                  - id: widget1
+                    name: {value: alpha}
+                    description: {value: An example widget}
+                    createdAt: '2026-10-02T12:00:00Z'
+                paginationContext: {nextToken: '', maxResults: 20}
+components:
+  schemas:
+    Query:
+      type: object
+      description: The canonical recursive Portos query graph.
+      properties:
+        match:
+          $ref: '#/components/schemas/QueryComparator'
+        lessThan:
+          $ref: '#/components/schemas/QueryComparator'
+        greaterThan:
+          $ref: '#/components/schemas/QueryComparator'
+        and:
+          type: array
+          items:
+            $ref: '#/components/schemas/Query'
+        or:
+          type: array
+          items:
+            $ref: '#/components/schemas/Query'
+        not:
+          $ref: '#/components/schemas/Query'
+        patternMatch:
+          type: string
+        freeformMatch:
+          type: string
+    QueryComparator:
+      type: object
+      description: A query comparison with a field key and string value.
+      properties:
+        key: {type: string}
+        value: {type: string}
+    PaginationContext:
+      type: object
+      description: The cursor and maximum number of results.
+      properties:
+        nextToken: {type: string}
+        maxResults: {type: integer}
+    NameValue:
+      type: object
+      description: The canonical structured name value.
+      properties:
+        value: {type: string}
+    DescriptionValue:
+      type: object
+      description: The canonical structured description value.
+      properties:
+        value: {type: string}
+    Widget:
+      type: object
+      description: A widget with canonical value objects and timestamp.
+      required: [id, name, description]
+      properties:
+        id: {type: string}
+        name:
+          $ref: '#/components/schemas/NameValue'
+        description:
+          $ref: '#/components/schemas/DescriptionValue'
+        createdAt: {type: string, format: date-time}
+        state:
+          type: string
+          x-extensible-enum: [ACTIVE, INACTIVE]
+          x-enum-varnames: [ACTIVE, INACTIVE]

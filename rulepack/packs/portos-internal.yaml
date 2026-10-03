@@ -1,0 +1,41 @@
+version: 1
+rules:
+    - id: portos.operation-vocabulary
+      check: portos.operation-vocabulary
+      severity: error
+    - id: portos.query-request
+      check: portos.query-request
+      severity: error
+    - id: portos.async-response
+      check: portos.async-response
+      severity: error
+    - id: portos.collection-response
+      check: portos.collection-response
+      severity: error
+    - id: portos.pagination-response
+      check: portos.pagination-response
+      severity: error
+    - id: portos.path-description
+      check: portos.path-description
+      severity: error
+    - id: portos.pagination-request
+      check: portos.pagination-request
+      severity: error
+    - id: portos.open-enums
+      check: portos.open-enums
+      severity: error
+    - id: portos.date-fields
+      check: portos.date-fields
+      severity: error
+    - id: portos.batch-contract
+      check: portos.batch-contract
+      severity: error
+    - id: portos.query-graph
+      check: portos.query-graph
+      severity: error
+    - id: portos.name-schema
+      check: portos.name-schema
+      severity: error
+    - id: portos.description-schema
+      check: portos.description-schema
+      severity: error

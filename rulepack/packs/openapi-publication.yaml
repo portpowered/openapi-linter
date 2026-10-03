@@ -1,0 +1,8 @@
+version: 1
+rules:
+    - id: openapi.info-contact
+      check: openapi.info-contact
+      severity: warning
+    - id: openapi.info-license
+      check: openapi.info-license
+      severity: warning

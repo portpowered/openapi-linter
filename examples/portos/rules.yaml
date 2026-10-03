@@ -1,0 +1,13 @@
+version: 1
+extends: [portos-defaults]
+overrides:
+  - id: portos.query-graph
+    options:
+      query-schema: Query
+  - id: portos.name-schema
+    options:
+      name-schema: NameValue
+  - id: portos.description-schema
+    options:
+      description-schema: DescriptionValue
+rules: []

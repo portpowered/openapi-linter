@@ -1,0 +1,689 @@
+[
+  {
+    "defaults": {
+      "public-operations": []
+    },
+    "category": "openapi",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "openapi:security"
+    ],
+    "id": "openapi.auth-required",
+    "title": "auth required",
+    "kind": "openapi",
+    "options": {
+      "public-operations": "[]string"
+    },
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "openapi:core",
+      "openapi:recommended",
+      "portos-defaults"
+    ],
+    "id": "openapi.enum-values",
+    "title": "enum values",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "defaults": {
+      "error-schema": ""
+    },
+    "category": "openapi",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [],
+    "id": "openapi.error-response",
+    "title": "error response",
+    "kind": "openapi",
+    "options": {
+      "error-schema": "string"
+    },
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "openapi:recommended",
+      "portos-defaults"
+    ],
+    "id": "openapi.examples-valid",
+    "title": "examples valid",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "openapi:publication"
+    ],
+    "id": "openapi.info-contact",
+    "title": "info contact",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "openapi:documentation",
+      "openapi:recommended",
+      "portos-defaults"
+    ],
+    "id": "openapi.info-description",
+    "title": "info description",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "openapi:publication"
+    ],
+    "id": "openapi.info-license",
+    "title": "info license",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "openapi:documentation",
+      "openapi:recommended",
+      "portos-defaults"
+    ],
+    "id": "openapi.operation-description",
+    "title": "operation description",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "defaults": {
+      "required": true
+    },
+    "category": "openapi",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "openapi:core",
+      "openapi:recommended",
+      "portos-defaults"
+    ],
+    "id": "openapi.operation-id",
+    "title": "operation id",
+    "kind": "openapi",
+    "options": {
+      "pattern": "See rule-pack reference",
+      "required": "See rule-pack reference"
+    },
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "openapi:core",
+      "openapi:recommended",
+      "portos-defaults"
+    ],
+    "id": "openapi.operation-id-unique",
+    "title": "operation id unique",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "defaults": {
+      "classes": [
+        "2",
+        "3"
+      ]
+    },
+    "category": "openapi",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "openapi:recommended",
+      "portos-defaults"
+    ],
+    "id": "openapi.operation-success-response",
+    "title": "operation success response",
+    "kind": "openapi",
+    "options": {
+      "classes": "[]string"
+    },
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "openapi:documentation",
+      "openapi:recommended",
+      "portos-defaults"
+    ],
+    "id": "openapi.operation-summary",
+    "title": "operation summary",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "defaults": {
+      "collection-operations": [],
+      "max-results-field": "maxResults",
+      "next-token-field": "nextToken",
+      "pagination-field": "paginationContext"
+    },
+    "category": "openapi",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [],
+    "id": "openapi.pagination",
+    "title": "pagination",
+    "kind": "openapi",
+    "options": {
+      "collection-operations": "[]string",
+      "max-results-field": "string",
+      "next-token-field": "string",
+      "pagination-field": "string"
+    },
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "openapi:documentation",
+      "openapi:recommended",
+      "portos-defaults"
+    ],
+    "id": "openapi.parameter-description",
+    "title": "parameter description",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "openapi:core",
+      "openapi:recommended",
+      "portos-defaults"
+    ],
+    "id": "openapi.parameters-unique",
+    "title": "parameters unique",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "openapi:conventions"
+    ],
+    "id": "openapi.path-naming",
+    "title": "path naming",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "openapi:core",
+      "openapi:recommended",
+      "portos-defaults"
+    ],
+    "id": "openapi.path-parameters",
+    "title": "path parameters",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "openapi:core",
+      "openapi:recommended",
+      "portos-defaults"
+    ],
+    "id": "openapi.path-syntax",
+    "title": "path syntax",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "openapi:conventions"
+    ],
+    "id": "openapi.property-camel-case",
+    "title": "property camel case",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "openapi:core",
+      "openapi:recommended",
+      "portos-defaults"
+    ],
+    "id": "openapi.ref-siblings",
+    "title": "ref siblings",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "openapi:documentation",
+      "openapi:recommended",
+      "portos-defaults"
+    ],
+    "id": "openapi.request-response-example",
+    "title": "request response example",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "openapi:documentation",
+      "openapi:recommended",
+      "portos-defaults"
+    ],
+    "id": "openapi.schema-description",
+    "title": "schema description",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "openapi:conventions"
+    ],
+    "id": "openapi.schema-naming",
+    "title": "schema naming",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "openapi:core",
+      "openapi:recommended",
+      "portos-defaults"
+    ],
+    "id": "openapi.security-references",
+    "title": "security references",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "defaults": {
+      "hosts": [],
+      "protocols": [
+        "https"
+      ]
+    },
+    "category": "openapi",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "openapi:security"
+    ],
+    "id": "openapi.server-policy",
+    "title": "server policy",
+    "kind": "openapi",
+    "options": {
+      "hosts": "[]string",
+      "protocols": "[]string"
+    },
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "openapi:core",
+      "openapi:recommended",
+      "portos-defaults"
+    ],
+    "id": "openapi.server-variables",
+    "title": "server variables",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "openapi:core",
+      "openapi:recommended",
+      "portos-defaults"
+    ],
+    "id": "openapi.spec-structure",
+    "title": "spec structure",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "openapi:documentation",
+      "openapi:recommended",
+      "portos-defaults"
+    ],
+    "id": "openapi.tags-defined",
+    "title": "tags defined",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "openapi",
+    "recommendedSeverity": "warning",
+    "fixable": false,
+    "presets": [
+      "openapi:maintenance"
+    ],
+    "id": "openapi.unused-components",
+    "title": "unused components",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "defaults": {
+      "async-schema": "AsyncIdentifier",
+      "item-id-field": "id"
+    },
+    "category": "portos",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "portos-defaults",
+      "portos:internal"
+    ],
+    "id": "portos.async-response",
+    "title": "async response",
+    "kind": "openapi",
+    "options": {
+      "async-schema": "string",
+      "item-id-field": "string"
+    },
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "defaults": {
+      "item-id-field": "id",
+      "items-field": "items",
+      "results-field": "results"
+    },
+    "category": "portos",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "portos-defaults",
+      "portos:internal"
+    ],
+    "id": "portos.batch-contract",
+    "title": "batch contract",
+    "kind": "openapi",
+    "options": {
+      "item-id-field": "string",
+      "items-field": "string",
+      "results-field": "string"
+    },
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "defaults": {
+      "pagination-field": "paginationContext",
+      "results-field": "results"
+    },
+    "category": "portos",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "portos-defaults",
+      "portos:internal"
+    ],
+    "id": "portos.collection-response",
+    "title": "collection response",
+    "kind": "openapi",
+    "options": {
+      "pagination-field": "string",
+      "results-field": "string"
+    },
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "defaults": {
+      "date-fields": []
+    },
+    "category": "portos",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "portos-defaults",
+      "portos:internal"
+    ],
+    "id": "portos.date-fields",
+    "title": "date fields",
+    "kind": "openapi",
+    "options": {
+      "date-fields": "[]string"
+    },
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "defaults": {
+      "description-schema": "DescriptionValue"
+    },
+    "category": "portos",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "portos-defaults",
+      "portos:internal"
+    ],
+    "id": "portos.description-schema",
+    "title": "description schema",
+    "kind": "openapi",
+    "options": {
+      "description-schema": "string"
+    },
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "defaults": {
+      "name-schema": "NameValue"
+    },
+    "category": "portos",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "portos-defaults",
+      "portos:internal"
+    ],
+    "id": "portos.name-schema",
+    "title": "name schema",
+    "kind": "openapi",
+    "options": {
+      "name-schema": "string"
+    },
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "portos",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "portos-defaults",
+      "portos:internal"
+    ],
+    "id": "portos.open-enums",
+    "title": "open enums",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "defaults": {
+      "modifiers": [
+        "Batch",
+        "Async"
+      ],
+      "operations": [
+        "List",
+        "Send",
+        "Delete",
+        "Query",
+        "Get",
+        "Modify"
+      ]
+    },
+    "category": "portos",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "portos-defaults",
+      "portos:internal"
+    ],
+    "id": "portos.operation-vocabulary",
+    "title": "operation vocabulary",
+    "kind": "openapi",
+    "options": {
+      "modifiers": "[]string",
+      "operations": "[]string"
+    },
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "defaults": {
+      "max-results-field": "maxResults",
+      "next-token-field": "nextToken",
+      "pagination-field": "paginationContext"
+    },
+    "category": "portos",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "portos-defaults",
+      "portos:internal"
+    ],
+    "id": "portos.pagination-request",
+    "title": "pagination request",
+    "kind": "openapi",
+    "options": {
+      "max-results-field": "string",
+      "next-token-field": "string",
+      "pagination-field": "string"
+    },
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "defaults": {
+      "max-results-field": "maxResults",
+      "next-token-field": "nextToken",
+      "pagination-field": "paginationContext"
+    },
+    "category": "portos",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "portos-defaults",
+      "portos:internal"
+    ],
+    "id": "portos.pagination-response",
+    "title": "pagination response",
+    "kind": "openapi",
+    "options": {
+      "max-results-field": "string",
+      "next-token-field": "string",
+      "pagination-field": "string"
+    },
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "portos",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "portos-defaults",
+      "portos:internal"
+    ],
+    "id": "portos.path-description",
+    "title": "path description",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "defaults": {
+      "query-schema": "Query"
+    },
+    "category": "portos",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "portos-defaults",
+      "portos:internal"
+    ],
+    "id": "portos.query-graph",
+    "title": "query graph",
+    "kind": "openapi",
+    "options": {
+      "query-schema": "string"
+    },
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "portos",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "portos-defaults",
+      "portos:internal"
+    ],
+    "id": "portos.query-request",
+    "title": "query request",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  }
+]

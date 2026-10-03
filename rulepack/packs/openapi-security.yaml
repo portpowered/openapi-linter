@@ -1,0 +1,8 @@
+version: 1
+rules:
+    - id: openapi.auth-required
+      check: openapi.auth-required
+      severity: error
+    - id: openapi.server-policy
+      check: openapi.server-policy
+      severity: error

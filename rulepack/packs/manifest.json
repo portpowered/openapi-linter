@@ -1,0 +1,52 @@
+[
+  {
+    "name": "openapi:conventions",
+    "file": "openapi-conventions.yaml",
+    "sha256": "584f9b4b8993e65817aaef000b73092a498dbc9a6b88742ae056b753190da544"
+  },
+  {
+    "name": "openapi:core",
+    "file": "openapi-core.yaml",
+    "sha256": "a2a8fa7cd33ef8083027dc63d248e3e4de3ef7b8057db0ce5b02083f267665d2"
+  },
+  {
+    "name": "openapi:documentation",
+    "file": "openapi-documentation.yaml",
+    "sha256": "c7f0effd8effc88a8f1fbcb31144b8c1bd75bfb675e92ff2440b74105a5bda14"
+  },
+  {
+    "name": "openapi:maintenance",
+    "file": "openapi-maintenance.yaml",
+    "sha256": "df69619368b1893d56dd849d44e88ebcc904065e5f49e0ab4645609aabacbbcd"
+  },
+  {
+    "name": "openapi:publication",
+    "file": "openapi-publication.yaml",
+    "sha256": "c5dfe8ae99fc9e9f480d3a8592d224335dd0b43f6bc5a357229be6ed3550b33f"
+  },
+  {
+    "name": "openapi:recommended",
+    "file": "openapi-recommended.yaml",
+    "sha256": "7b4335a35fe73cfe0e6ffeb31941bff9d45d7f55463b1577e61a418c7dfd6232"
+  },
+  {
+    "name": "openapi:security",
+    "file": "openapi-security.yaml",
+    "sha256": "9e1edf1197040d00f3c89640614b04129dfb5433f6e272ce1f7bb8d1164aa5c2"
+  },
+  {
+    "name": "portos-defaults",
+    "file": "portos-defaults.yaml",
+    "sha256": "018dd79d29db679cf9fdb2d65e8db266b8918faba0ec28b7999297a30339cfcc"
+  },
+  {
+    "name": "portos:internal",
+    "file": "portos-internal.yaml",
+    "sha256": "6547a49feb8f9b7b0f17a16bfc74e477a1f6efa04c69039a480a95cf2a5c6839"
+  },
+  {
+    "name": "schema:conventions",
+    "file": "schema-conventions.yaml",
+    "sha256": "b83bc82b7a2b2bf6300e6360e102134878288a0c378ca2e557ce6de4c77429a8"
+  }
+]

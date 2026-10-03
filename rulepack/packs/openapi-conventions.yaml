@@ -1,0 +1,11 @@
+version: 1
+rules:
+    - id: openapi.path-naming
+      check: openapi.path-naming
+      severity: warning
+    - id: openapi.schema-naming
+      check: openapi.schema-naming
+      severity: warning
+    - id: openapi.property-camel-case
+      check: openapi.property-camel-case
+      severity: warning

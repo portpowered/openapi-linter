@@ -1,0 +1,59 @@
+version: 1
+rules:
+    - id: openapi.spec-structure
+      check: openapi.spec-structure
+      severity: error
+    - id: openapi.operation-id
+      check: openapi.operation-id
+      severity: error
+    - id: openapi.operation-id-unique
+      check: openapi.operation-id-unique
+      severity: error
+    - id: openapi.path-parameters
+      check: openapi.path-parameters
+      severity: error
+    - id: openapi.parameters-unique
+      check: openapi.parameters-unique
+      severity: error
+    - id: openapi.path-syntax
+      check: openapi.path-syntax
+      severity: error
+    - id: openapi.security-references
+      check: openapi.security-references
+      severity: error
+    - id: openapi.enum-values
+      check: openapi.enum-values
+      severity: error
+    - id: openapi.server-variables
+      check: openapi.server-variables
+      severity: error
+    - id: openapi.ref-siblings
+      check: openapi.ref-siblings
+      severity: error
+    - id: openapi.operation-summary
+      check: openapi.operation-summary
+      severity: warning
+    - id: openapi.operation-description
+      check: openapi.operation-description
+      severity: warning
+    - id: openapi.parameter-description
+      check: openapi.parameter-description
+      severity: warning
+    - id: openapi.schema-description
+      check: openapi.schema-description
+      severity: warning
+    - id: openapi.request-response-example
+      check: openapi.request-response-example
+      severity: warning
+    - id: openapi.tags-defined
+      check: openapi.tags-defined
+      severity: warning
+    - id: openapi.info-description
+      check: openapi.info-description
+      severity: warning
+    - id: openapi.operation-success-response
+      check: openapi.operation-success-response
+      severity: warning
+    - id: openapi.examples-valid
+      check: openapi.examples-valid
+      severity: warning

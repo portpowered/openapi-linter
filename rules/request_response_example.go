@@ -63,6 +63,14 @@ func (r *RequestResponseRequiresExample) VisitOperation(path string, method stri
 		}
 	}
 
+	if op.Responses != nil && op.Responses.Default != nil && op.Responses.Default.Content != nil {
+		for pair := op.Responses.Default.Content.First(); pair != nil; pair = pair.Next() {
+			if !mediaTypeHasExample(pair.Value()) {
+				violations = append(violations, linter.Violation{RuleName: r.Name(), Path: location, Message: fmt.Sprintf("response default content type %q is missing an example or examples", pair.Key())})
+			}
+		}
+	}
+
 	return violations
 }
 

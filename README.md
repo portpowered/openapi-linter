@@ -13,7 +13,7 @@ go build -o openapilint ./cmd/openapilint
 
 Inputs are YAML or JSON files, or directories searched recursively. `--root` defaults to the working directory. Inputs and local reference targets must stay within that root, including symlinks. Remote and absolute reference targets are rejected. Use `--kind schema` for standalone YAML-schema files; directory inputs must contain only documents of the selected kind.
 
-OpenAPI 3.0 and 3.1 are the supported document versions. The command builds the parsed model and reports parsing/reference errors; it does not claim complete OpenAPI specification conformance validation. Schemas and cross-file references are exposed through libopenapi. The loader permits array/polymorphic circular references, and model-build failures otherwise produce an execution error. Pure reference cycles may fail to build.
+OpenAPI 3.0 and 3.1 are the supported document versions. The command builds the parsed model and reports parsing/reference errors; it includes offline document-structure and example validation but does not claim complete semantic conformance. Schemas and cross-file references are exposed through libopenapi. The loader permits array/polymorphic circular references, and model-build failures otherwise produce an execution error. Pure reference cycles may fail to build.
 
 ## Rule packs
 
@@ -28,7 +28,7 @@ rules:
       pattern: '^[a-z][A-Za-z0-9]*$'
 ```
 
-An explicit pack executes only its configured rules. The default OpenAPI pack requires operation IDs. Schema mode has an empty default pack; supply your schema checks explicitly. Use `--only id,other-id` to select from a validated pack. See [rule-pack reference](docs/rule-packs.md) for checks, scope, and suppressions.
+An explicit pack executes its resolved rules, including named/local sets from `extends`. The default OpenAPI pack is `openapi:recommended`; `.openapilint.yaml` at the selected root is discovered automatically. Schema mode has an empty default pack; supply your schema checks explicitly. Use `--only id,other-id` to select from a validated pack. See [rule-pack reference](docs/rule-packs.md) for checks, scope, and suppressions.
 
 Text diagnostics contain file, line, rule ID, message, and JSON pointer. `--format json` returns a deterministic array of diagnostics. Exit codes: 0 for success (including warning/info findings), 1 for error findings, 2 for configuration or execution failure. Linting is read-only; this release has no autofix command.
 
@@ -53,3 +53,13 @@ Release archives report the tag through `--version`; a Go installation reports `
 ## Development
 
 See [development](docs/development.md). Tests and examples are self-contained and require no parent service repository or private credentials.
+
+## Rule and usability roadmap
+
+See the [OpenAPI and Markdown linter plan](docs/linter-roadmap.md) for the existing-system comparison, proposed rule additions, customer activation UX, rule-set composition, testing, and rollout. It records implemented rules and UX, Portos requirements with rule IDs, and the remaining customer pilot work.
+
+## Compose Portos policy
+
+Use `init --preset portos-defaults` to activate general recommendations plus internal Portos policy in one version 1 configuration. `rules list`, `presets list`, and `config explain` make rule activation and overrides inspectable. See the rule-pack reference for baselines, SARIF, the warning failure threshold, and breaking default/configuration changes.
+
+The expanded rules and composition UX are available in this source checkout; pin the next release containing these changes when deploying them to CI. Existing v0.1.0 installation examples refer to the earlier released baseline.

@@ -1,0 +1,8 @@
+version: 1
+rules:
+    - id: schema.no-anonymous-objects
+      check: schema.no-anonymous-objects
+      severity: error
+    - id: schema.property-camel-case
+      check: schema.property-camel-case
+      severity: error

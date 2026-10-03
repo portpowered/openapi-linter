@@ -18,6 +18,9 @@ import (
 // Pack is the versioned customer rule configuration.
 type Pack struct {
 	Version      int           `yaml:"version"`
+	Extends      []string      `yaml:"extends,omitempty"`
+	Overrides    []Override    `yaml:"overrides,omitempty"`
+	Imports      []Import      `yaml:"-"`
 	Rules        []Rule        `yaml:"rules"`
 	Suppressions []Suppression `yaml:"suppressions,omitempty"`
 }
@@ -25,6 +28,8 @@ type Pack struct {
 // Rule assigns an identity, severity, scope and options to a registered check.
 type Rule struct {
 	ID          string              `yaml:"id"`
+	Enabled     *bool               `yaml:"enabled,omitempty"`
+	Origin      string              `yaml:"-"`
 	Check       string              `yaml:"check"`
 	Description string              `yaml:"description,omitempty"`
 	Severity    interfaces.Severity `yaml:"severity,omitempty"`
@@ -35,17 +40,21 @@ type Rule struct {
 
 // Suppression explicitly silences a configured rule at a file and optional line.
 type Suppression struct {
-	Rule   string `yaml:"rule"`
-	Path   string `yaml:"path"`
-	Line   int    `yaml:"line,omitempty"`
-	Reason string `yaml:"reason"`
+	Pointer string `yaml:"pointer,omitempty"`
+	Rule    string `yaml:"rule"`
+	Path    string `yaml:"path"`
+	Line    int    `yaml:"line,omitempty"`
+	Reason  string `yaml:"reason"`
 }
 
 // Factory constructs a check using validated customer options.
 type Factory func(yaml.Node) (interfaces.Analyzer, error)
 
 // Registry holds factories registered by either the application or its extensions.
-type Registry struct{ factories map[string]Factory }
+type Registry struct {
+	factories   map[string]Factory
+	descriptors map[string]Descriptor
+}
 
 func NewRegistry() *Registry { return &Registry{factories: make(map[string]Factory)} }
 
@@ -112,6 +121,9 @@ func (r *Registry) Compile(pack Pack) (*Program, error) {
 	if pack.Version != 1 {
 		return nil, fmt.Errorf("unsupported rule pack version %d", pack.Version)
 	}
+	if len(pack.Extends) > 0 || len(pack.Overrides) > 0 {
+		return nil, fmt.Errorf("unresolved pack: use rulepack.Load before Compile")
+	}
 	program := &Program{suppressions: append([]Suppression(nil), pack.Suppressions...)}
 	seen := map[string]bool{}
 	for _, spec := range pack.Rules {
@@ -143,11 +155,16 @@ func (r *Registry) Compile(pack Pack) (*Program, error) {
 		if analyzer == nil {
 			return nil, fmt.Errorf("rule %s: factory returned no analyzer", spec.ID)
 		}
-		program.rules = append(program.rules, compiledRule{spec, analyzer})
+		if spec.Enabled == nil || *spec.Enabled {
+			program.rules = append(program.rules, compiledRule{spec, analyzer})
+		}
 	}
 	for _, s := range program.suppressions {
 		if !seen[s.Rule] || s.Line < 0 || strings.TrimSpace(s.Reason) == "" {
 			return nil, fmt.Errorf("invalid suppression for rule %q: existing rule, reason and nonnegative line required", s.Rule)
+		}
+		if s.Pointer != "" && s.Pointer != "#" && !strings.HasPrefix(s.Pointer, "#/") {
+			return nil, fmt.Errorf("suppression pointer must begin with #/")
 		}
 		if err := validatePattern(s.Path); err != nil {
 			return nil, err
@@ -157,6 +174,11 @@ func (r *Registry) Compile(pack Pack) (*Program, error) {
 }
 
 func validatePattern(pattern string) error {
+	if strings.Contains(pattern, "**") {
+		if !strings.HasSuffix(pattern, "/**") || strings.Contains(strings.TrimSuffix(pattern, "/**"), "**") {
+			return fmt.Errorf("only a trailing /** recursive scope is supported: %q", pattern)
+		}
+	}
 	if pattern == "" || path.IsAbs(pattern) || strings.Contains(pattern, "\\") || pattern == ".." || strings.HasPrefix(pattern, "../") || path.Clean(pattern) != pattern {
 		return fmt.Errorf("scope must be a nonempty root-relative slash path: %q", pattern)
 	}
@@ -200,6 +222,7 @@ func relativePath(root, file string) (string, error) {
 
 // Run executes checks with identical scoping, identity, severity and suppression handling.
 func (p *Program) Run(ctx context.Context, root string, documents []*interfaces.Document) ([]interfaces.Diagnostic, error) {
+	ctx = withGraphCache(ctx)
 	root, err := filepath.Abs(root)
 	if err != nil {
 		return nil, err
@@ -237,6 +260,8 @@ func (p *Program) Run(ctx context.Context, root string, documents []*interfaces.
 		}
 		for _, diagnostic := range pass.Diagnostics() {
 			diagnostic.RuleID = rule.spec.ID
+			diagnostic.CheckID = rule.spec.Check
+			diagnostic.Origin = rule.spec.Origin
 			diagnostic.Severity = rule.spec.Severity
 			rel, err := relativePath(root, diagnostic.Path)
 			if err != nil {
@@ -277,9 +302,11 @@ func (p *Program) Run(ctx context.Context, root string, documents []*interfaces.
 
 func (p *Program) suppressed(d interfaces.Diagnostic, rel string) bool {
 	for _, s := range p.suppressions {
-		if s.Rule == d.RuleID && matches(s.Path, rel) && (s.Line == 0 || s.Line == d.Line) {
+		if s.Rule == d.RuleID && matches(s.Path, rel) && (s.Line == 0 || s.Line == d.Line) && (s.Pointer == "" || s.Pointer == d.Pointer) {
 			return true
 		}
 	}
 	return false
 }
+
+func (r *Rule) setSeverity(s string) error { r.Severity = interfaces.Severity(s); return nil }

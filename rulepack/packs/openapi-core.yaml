@@ -1,0 +1,32 @@
+version: 1
+rules:
+    - id: openapi.spec-structure
+      check: openapi.spec-structure
+      severity: error
+    - id: openapi.operation-id
+      check: openapi.operation-id
+      severity: error
+    - id: openapi.operation-id-unique
+      check: openapi.operation-id-unique
+      severity: error
+    - id: openapi.path-parameters
+      check: openapi.path-parameters
+      severity: error
+    - id: openapi.parameters-unique
+      check: openapi.parameters-unique
+      severity: error
+    - id: openapi.path-syntax
+      check: openapi.path-syntax
+      severity: error
+    - id: openapi.security-references
+      check: openapi.security-references
+      severity: error
+    - id: openapi.enum-values
+      check: openapi.enum-values
+      severity: error
+    - id: openapi.server-variables
+      check: openapi.server-variables
+      severity: error
+    - id: openapi.ref-siblings
+      check: openapi.ref-siblings
+      severity: error
