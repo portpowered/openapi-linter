@@ -2,7 +2,6 @@ package rulepack
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	linter "github.com/portpowered/openapi-linter"
 	jsonschema "github.com/santhosh-tekuri/jsonschema/v6"
@@ -147,18 +146,8 @@ func (c apiCheck) validateExamples(ctx context.Context, g *graph, root site, emi
 			pass.ReportError(fmt.Errorf("cannot validate schema at %s: %w", schema.ptr, e))
 			return
 		}
-		var raw any
-		if e = example.n.Decode(&raw); e != nil {
-			pass.ReportError(e)
-			return
-		}
-		encoded, e := json.Marshal(raw)
+		value, e := jsonValue(example.n)
 		if e != nil {
-			pass.ReportError(e)
-			return
-		}
-		var value any
-		if e = json.Unmarshal(encoded, &value); e != nil {
 			pass.ReportError(e)
 			return
 		}

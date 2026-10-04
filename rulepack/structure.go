@@ -66,16 +66,8 @@ func (c apiCheck) validateStructure(root site, emit func(site, string)) error {
 	if e != nil {
 		return e
 	}
-	var raw any
-	if e = root.n.Decode(&raw); e != nil {
-		return e
-	}
-	data, e := json.Marshal(raw)
+	value, e := jsonValue(root.n)
 	if e != nil {
-		return e
-	}
-	var value any
-	if e = json.Unmarshal(data, &value); e != nil {
 		return e
 	}
 	e = schema.Validate(value)
