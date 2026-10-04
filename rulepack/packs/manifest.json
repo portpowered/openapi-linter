@@ -2,7 +2,7 @@
   {
     "name": "google-defaults",
     "file": "google-defaults.yaml",
-    "sha256": "af4ced2a54b6963a42832d96e3c1ef0376adddda4cb366357c6978dcbb2b98e7"
+    "sha256": "6d8eae7903e8be60ed902ff521d86dfc6319584e789d8e05c3a7dca50bc4c8c1"
   },
   {
     "name": "openapi:conventions",
@@ -22,7 +22,7 @@
   {
     "name": "openapi:google",
     "file": "openapi-google.yaml",
-    "sha256": "c76c494976a2090464140b15f8ef548cb991b1e5d1a18dcefeb9b7622520d84e"
+    "sha256": "4ef7adfee1a6fef6200bdd4f9c6df02c1f3bdc945a7c2fd9ba582a4b6d68a2db"
   },
   {
     "name": "openapi:maintenance",
@@ -52,7 +52,7 @@
   {
     "name": "portos:internal",
     "file": "portos-internal.yaml",
-    "sha256": "354942bd09195571d302c28a0220e72f63c52cc7d35f96e72aae69a9cb51df76"
+    "sha256": "dc180cd17317de00538a5e8e981bd839b91e00a45e052c06a51ea7ec92b6c7c5"
   },
   {
     "name": "schema:conventions",
