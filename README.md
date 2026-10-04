@@ -75,3 +75,5 @@ CI runs the same coverage/lint policy on Linux, macOS and Windows for each suppo
 See [Google API rules and analysis](docs/google-api.md) for `openapi:google`, `google-defaults`, 16 checks and their five paired contract groups. These are opt-in REST projections of the AIPs.
 
 The [Portos response contracts](docs/portos-api.md) enforce 200/202 success statuses, 409 ETag conflicts, canonical error bodies, versioned kebab-case paths, declared delete idempotency, structured sorts, and synchronous batch outcomes. They are included in `portos-defaults`.
+
+Browse the [documentation website](https://portpowered.github.io/openapi-linter/) for rule behavior, parameters, configuration examples and Go library usage. See [website maintenance](docs/website.md) for local builds and CI.

@@ -1042,5 +1042,29 @@
     "title": "version prefix",
     "kind": "openapi",
     "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "schema",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "schema:conventions"
+    ],
+    "id": "schema.no-anonymous-objects",
+    "title": "no anonymous objects",
+    "kind": "schema",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "schema",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "schema:conventions"
+    ],
+    "id": "schema.property-camel-case",
+    "title": "property camel case",
+    "kind": "schema",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
   }
 ]
