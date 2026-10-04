@@ -1,5 +1,13 @@
 # OpenAPI linter
 
+[![Go version](https://img.shields.io/github/go-mod/go-version/portpowered/openapi-linter)](https://github.com/portpowered/openapi-linter/blob/main/go.mod)
+[![CI](https://github.com/portpowered/openapi-linter/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/portpowered/openapi-linter/actions/workflows/ci.yml)
+[![Coverage](https://portpowered.github.io/openapi-linter/coverage.svg)](https://portpowered.github.io/openapi-linter/coverage.html)
+[![Release](https://img.shields.io/github/v/release/portpowered/openapi-linter?display_name=tag)](https://github.com/portpowered/openapi-linter/releases/latest)
+[![Go Reference](https://pkg.go.dev/badge/github.com/portpowered/openapi-linter.svg)](https://pkg.go.dev/github.com/portpowered/openapi-linter)
+[![License](https://img.shields.io/github/license/portpowered/openapi-linter)](https://github.com/portpowered/openapi-linter/blob/main/LICENSE)
+[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://portpowered.github.io/openapi-linter/)
+
 `openapilint` is a standalone Go command and library for configurable OpenAPI and YAML-schema checks. Customer rules and bundled checks use the same public registry, analyzer, diagnostics, and suppression interfaces.
 
 ## Run
@@ -68,9 +76,9 @@ The expanded rules and composition UX are available in this source checkout; pin
 
 Run `make` (or `make verify`) for formatting validation, build, vet, all standard Go linters, race-enabled tests and a 95% statement coverage gate, plus quality-tool tests. Install Python 3, Go and golangci-lint v2.14.0 first. Windows users can set `PYTHON=python`; Unix installations may prefer `PYTHON=python3`. `GOLANGCI_LINT` can point to the pinned executable.
 
-Individual targets are `make test`, `make lint`, `make coverage`, `make coverage-check`, `make fmt-check`, and `make vet`. `make fmt` applies formatting. Coverage is statement-weighted across both library and command/example packages, using `-coverpkg=./...` so integration tests count library execution; no files or packages are removed from the report. The gate compares the unrounded value to 95%. `coverage.out` is local output and CI uploads each platform/toolchain profile.
+Individual targets are `make test`, `make lint`, `make coverage`, `make coverage-check`, `make fmt-check`, and `make vet`. `make fmt` applies formatting. Coverage is statement-weighted across library, command and example packages. `-coverpkg=./...` counts library execution from integration tests. The report includes every file and package. The gate compares the unrounded value to 95%. `coverage.out` is local output and CI uploads each platform/toolchain profile.
 
-CI runs the same coverage/lint policy on Linux, macOS and Windows for each supported Go version. The explicit `linters.default: standard` configuration enables errcheck, govet, ineffassign, staticcheck and unused, with no preset issue exclusions. See the [official standard linter list](https://golangci-lint.run/docs/welcome/quick-start/) and [pinned release](https://github.com/golangci/golangci-lint/releases/tag/v2.14.0). Lint failures are fixed rather than baselined.
+CI runs the same coverage/lint policy on Linux, macOS and Windows with the current stable Go release. The explicit `linters.default: standard` configuration enables errcheck, govet, ineffassign, staticcheck and unused, with no preset issue exclusions. See the [official standard linter list](https://golangci-lint.run/docs/welcome/quick-start/) and [pinned release](https://github.com/golangci/golangci-lint/releases/tag/v2.14.0). Lint failures are fixed rather than baselined.
 
 See [Google API rules and analysis](docs/google-api.md) for `openapi:google`, `google-defaults`, 16 checks and their five paired contract groups. These are opt-in REST projections of the AIPs.
 

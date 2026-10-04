@@ -2,7 +2,6 @@ package rulepack
 
 import (
 	"context"
-	"encoding/json"
 	"os"
 	"path/filepath"
 	"testing"
@@ -12,14 +11,18 @@ import (
 )
 
 func TestSiteRuleConfigurations(t *testing.T) {
-	data, err := os.ReadFile("../docs/rule-reference.json")
+	data, err := os.ReadFile("../docs/rule-reference.yaml")
 	if err != nil {
 		t.Fatal(err)
 	}
 	var references map[string]struct {
-		Options json.RawMessage `json:"example-options"`
+		Options yaml.Node `yaml:"example-options"`
+		Example struct {
+			Bad  string `yaml:"bad"`
+			Good string `yaml:"good"`
+		} `yaml:"example"`
 	}
-	if err := json.Unmarshal(data, &references); err != nil {
+	if err := yaml.Unmarshal(data, &references); err != nil {
 		t.Fatal(err)
 	}
 	registry := NewRegistry()
@@ -31,12 +34,17 @@ func TestSiteRuleConfigurations(t *testing.T) {
 	}
 	for _, descriptor := range registry.Catalog() {
 		t.Run(descriptor.ID, func(t *testing.T) {
-			var options yaml.Node
-			if err := yaml.Unmarshal(references[descriptor.ID].Options, &options); err != nil {
+			if _, err := registry.Compile(Pack{Version: 1, Rules: []Rule{{ID: descriptor.ID, Check: descriptor.ID, Options: references[descriptor.ID].Options}}}); err != nil {
 				t.Fatal(err)
 			}
-			if _, err := registry.Compile(Pack{Version: 1, Rules: []Rule{{ID: descriptor.ID, Check: descriptor.ID, Options: *options.Content[0]}}}); err != nil {
-				t.Fatal(err)
+			for _, source := range []string{references[descriptor.ID].Example.Bad, references[descriptor.ID].Example.Good} {
+				var fragment yaml.Node
+				if err := yaml.Unmarshal([]byte(source), &fragment); err != nil {
+					t.Fatal(err)
+				}
+				if len(fragment.Content) != 1 || fragment.Content[0].Kind != yaml.MappingNode {
+					t.Fatal("API examples must be YAML contract mappings")
+				}
 			}
 		})
 	}

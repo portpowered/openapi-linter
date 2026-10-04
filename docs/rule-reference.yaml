@@ -1,0 +1,1181 @@
+google.boolean-names:
+  summary: Rejects is-prefixed boolean JSON properties, except the documented isNew reserved-word exception.
+  parameters: {}
+  example-options: {}
+  notes: See [Google API rules](../google-api.md) for source AIPs, classification and explicit intent
+    markers. These checks inspect contracts, not runtime behavior.
+  example:
+    language: yaml
+    bad: 'properties: {isEnabled: {type: boolean}}
+
+      '
+    good: 'properties: {enabled: {type: boolean}}
+
+      '
+    explanation: Boolean JSON fields must omit the is prefix.
+google.custom-method:
+  summary: Checks custom GET or POST operation names against a matching colon verb suffix and a finite
+    set of prohibited preposition words.
+  parameters: {}
+  example-options: {}
+  notes: See [Google API rules](../google-api.md) for source AIPs, classification and explicit intent
+    markers. These checks inspect contracts, not runtime behavior.
+  example:
+    language: yaml
+    bad: "/v1/widgets/{widget}:archive:\n  post: {operationId: ArchiveWidgetFromFolder}\n"
+    good: "/v1/widgets/{widget}:archive:\n  post: {operationId: ArchiveWidget}\n"
+    explanation: The operation name contains a prohibited preposition. The custom verb must also match
+      the colon suffix.
+google.error-response:
+  summary: Requires a documented HTTP error body with a JSON error envelope containing integer code and
+    string message.
+  parameters: {}
+  example-options: {}
+  notes: See [Google API rules](../google-api.md) for source AIPs, classification and explicit intent
+    markers. These checks inspect contracts, not runtime behavior.
+  example:
+    language: yaml
+    bad: "'400':\n  content:\n    application/json:\n      schema: {type: string}\n"
+    good: "'400':\n  content:\n    application/json:\n      schema:\n        type: object\n        properties:\n\
+      \          error:\n            type: object\n            properties: {code: {type: integer}, message:\
+      \ {type: string}}\n"
+    explanation: The error response needs the JSON error envelope and its code and message fields.
+google.field-names:
+  summary: Requires lowerCamelCase JSON property names, with exceptions for ProtoJSON Any @type and arbitrary
+    map keys.
+  parameters: {}
+  example-options: {}
+  notes: See [Google API rules](../google-api.md) for source AIPs, classification and explicit intent
+    markers. These checks inspect contracts, not runtime behavior.
+  example:
+    language: yaml
+    bad: 'properties: {display_name: {type: string}}
+
+      '
+    good: 'properties: {displayName: {type: string}}
+
+      '
+    explanation: The property uses snake case rather than lower camel case.
+google.http-method:
+  summary: Requires GET for standard Get/List, POST for Create, PATCH for Update and DELETE for Delete
+    operations.
+  parameters: {}
+  example-options: {}
+  notes: See [Google API rules](../google-api.md) for source AIPs, classification and explicit intent
+    markers. These checks inspect contracts, not runtime behavior.
+  example:
+    language: yaml
+    bad: 'post: {operationId: GetWidget}
+
+      '
+    good: 'get: {operationId: GetWidget}
+
+      '
+    explanation: Standard Get operations require GET.
+google.list-request:
+  summary: Requires optional pageSize integer and pageToken string query parameters on standard List requests.
+  parameters: {}
+  example-options: {}
+  notes: See [Google API rules](../google-api.md) for source AIPs, classification and explicit intent
+    markers. These checks inspect contracts, not runtime behavior.
+  example:
+    language: yaml
+    bad: 'parameters: []
+
+      '
+    good: "parameters:\n  - {name: pageSize, in: query, required: false, schema: {type: integer}}\n  -\
+      \ {name: pageToken, in: query, required: false, schema: {type: string}}\n"
+    explanation: A standard List request needs the optional pagination query parameters.
+google.list-response:
+  summary: Requires List success objects with one resource-object array and a string nextPageToken.
+  parameters: {}
+  example-options: {}
+  notes: See [Google API rules](../google-api.md) for source AIPs, classification and explicit intent
+    markers. These checks inspect contracts, not runtime behavior.
+  example:
+    language: yaml
+    bad: 'type: array
+
+      items: {type: object}
+
+      '
+    good: "type: object\nproperties:\n  widgets: {type: array, items: {type: object}}\n  nextPageToken:\
+      \ {type: string}\n"
+    explanation: A List response needs an object envelope with a resource array and nextPageToken.
+google.long-running-response:
+  summary: Checks explicitly marked long-running operations for an Operation object declaring name, done,
+    error and response fields.
+  parameters: {}
+  example-options: {}
+  notes: See [Google API rules](../google-api.md) for source AIPs, classification and explicit intent
+    markers. These checks inspect contracts, not runtime behavior.
+  example:
+    language: yaml
+    bad: 'x-google-long-running: true
+
+      # Success schema
+
+      type: string
+
+      '
+    good: "x-google-long-running: true\n# Success schema\ntype: object\nproperties:\n  name: {type: string}\n\
+      \  done: {type: boolean}\n  error: {type: object}\n  response: {type: object}\n"
+    explanation: An explicitly marked long-running operation needs the Operation fields, rather than a
+      string response.
+google.method-name:
+  summary: Checks UpperCamelCase operation IDs with action and resource words and rejects the Async word.
+  parameters: {}
+  example-options: {}
+  notes: See [Google API rules](../google-api.md) for source AIPs, classification and explicit intent
+    markers. These checks inspect contracts, not runtime behavior.
+  example:
+    language: yaml
+    bad: 'operationId: get_widget
+
+      '
+    good: 'operationId: GetWidget
+
+      '
+    explanation: The method ID must use upper camel case with action and resource words.
+google.request-body:
+  summary: Rejects bodies on Get, List, Delete and other GET operations; requires a resource object body
+    on Create and Update.
+  parameters: {}
+  example-options: {}
+  notes: See [Google API rules](../google-api.md) for source AIPs, classification and explicit intent
+    markers. These checks inspect contracts, not runtime behavior.
+  example:
+    language: yaml
+    bad: "get:\n  operationId: GetWidget\n  requestBody: {required: true}\n"
+    good: "get:\n  operationId: GetWidget\n"
+    explanation: A Get operation must not take a request body.
+google.resource-name:
+  summary: Requires string name in synchronous resource responses and explicitly marked resource schemas.
+  parameters: {}
+  example-options: {}
+  notes: See [Google API rules](../google-api.md) for source AIPs, classification and explicit intent
+    markers. These checks inspect contracts, not runtime behavior.
+  example:
+    language: yaml
+    bad: 'x-google-resource: true
+
+      type: object
+
+      properties: {id: {type: string}}
+
+      '
+    good: 'x-google-resource: true
+
+      type: object
+
+      properties: {name: {type: string}}
+
+      '
+    explanation: A marked resource schema needs a string name field.
+google.resource-response:
+  summary: Requires object success responses on synchronous Get, Create and Update operations.
+  parameters: {}
+  example-options: {}
+  notes: See [Google API rules](../google-api.md) for source AIPs, classification and explicit intent
+    markers. These checks inspect contracts, not runtime behavior.
+  example:
+    language: yaml
+    bad: 'operationId: GetWidget
+
+      # Success schema
+
+      type: string
+
+      '
+    good: 'operationId: GetWidget
+
+      # Success schema
+
+      type: object
+
+      properties: {name: {type: string}}
+
+      '
+    explanation: A synchronous Get resource response must be an object.
+google.standard-path:
+  summary: Checks resource-variable endings for Get/Update/Delete and collection-literal endings for List/Create,
+    with explicit singleton handling.
+  parameters: {}
+  example-options: {}
+  notes: See [Google API rules](../google-api.md) for source AIPs, classification and explicit intent
+    markers. These checks inspect contracts, not runtime behavior.
+  example:
+    language: yaml
+    bad: "/v1/widgets:\n  get: {operationId: GetWidget}\n"
+    good: "/v1/widgets/{widget}:\n  get: {operationId: GetWidget}\n"
+    explanation: Get paths identify a resource with a final path variable.
+google.timestamp:
+  summary: Requires properties ending in Time to use type string and format date-time.
+  parameters: {}
+  example-options: {}
+  notes: See [Google API rules](../google-api.md) for source AIPs, classification and explicit intent
+    markers. These checks inspect contracts, not runtime behavior.
+  example:
+    language: yaml
+    bad: 'properties: {createTime: {type: string}}
+
+      '
+    good: 'properties: {createTime: {type: string, format: date-time}}
+
+      '
+    explanation: A property ending in Time needs the date-time format.
+google.update-mask:
+  summary: Requires an optional string updateMask query parameter on standard Update operations.
+  parameters: {}
+  example-options: {}
+  notes: See [Google API rules](../google-api.md) for source AIPs, classification and explicit intent
+    markers. These checks inspect contracts, not runtime behavior.
+  example:
+    language: yaml
+    bad: 'operationId: UpdateWidget
+
+      parameters: []
+
+      '
+    good: "operationId: UpdateWidget\nparameters:\n  - {name: updateMask, in: query, required: false,\
+      \ schema: {type: string}}\n"
+    explanation: Standard Update requests need an optional string updateMask query parameter.
+google.version-path:
+  summary: Requires a major-version path prefix such as /v1, /v1beta or /v1beta1.
+  parameters: {}
+  example-options: {}
+  notes: See [Google API rules](../google-api.md) for source AIPs, classification and explicit intent
+    markers. These checks inspect contracts, not runtime behavior.
+  example:
+    language: yaml
+    bad: '/widgets: {}
+
+      '
+    good: '/v1/widgets: {}
+
+      '
+    explanation: The path lacks a major-version prefix.
+openapi.auth-required:
+  summary: Requires effective security for each operation unless its operation ID is explicitly public.
+  parameters:
+    public-operations: Operation IDs allowed to omit effective authentication.
+  example-options:
+    public-operations: []
+  example:
+    language: yaml
+    bad: 'operationId: ReadWidget
+
+      security: []
+
+      '
+    good: 'operationId: ReadWidget
+
+      security: [{apiKey: []}]
+
+      '
+    explanation: An empty security requirement explicitly makes the operation public unless its ID is
+      allowed.
+openapi.enum-values:
+  summary: Checks declared enum values for consistency with their schema and duplicate members.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: 'type: string
+
+      enum: [ready, ready]
+
+      '
+    good: 'type: string
+
+      enum: [ready, stopped]
+
+      '
+    explanation: The enum contains duplicate members.
+openapi.error-response:
+  summary: Requires at least one documented client, server or default error response and optionally checks
+    its canonical schema reference.
+  parameters:
+    error-schema: Canonical schema name required in error-body references; empty disables reference-name
+      checking in openapi.error-response.
+  example-options:
+    error-schema: ''
+  example:
+    language: yaml
+    bad: 'responses: {''200'': {description: OK}}
+
+      '
+    good: "responses:\n  '200': {description: OK}\n  '400': {description: Invalid request}\n"
+    explanation: The operation declares no client, server or default error response.
+openapi.examples-valid:
+  summary: Validates supported OpenAPI media examples and schema examples against their declared schema
+    within bounded local references.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: 'schema: {type: integer}
+
+      example: text
+
+      '
+    good: 'schema: {type: integer}
+
+      example: 42
+
+      '
+    explanation: The example is a string while the declared schema requires an integer.
+openapi.info-contact:
+  summary: Requires the API info object to declare contact metadata.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: 'info: {title: API, version: v1}
+
+      '
+    good: 'info: {title: API, version: v1, contact: {name: Support}}
+
+      '
+    explanation: The info object has no contact metadata.
+openapi.info-description:
+  summary: Requires a nonblank API info description.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: 'info: {title: API, version: v1}
+
+      '
+    good: 'info: {title: API, version: v1, description: Widget API}
+
+      '
+    explanation: The API info description is missing.
+openapi.info-license:
+  summary: Requires the API info object to declare license metadata.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: 'info: {title: API, version: v1}
+
+      '
+    good: 'info: {title: API, version: v1, license: {name: Apache-2.0}}
+
+      '
+    explanation: The info object has no license metadata.
+openapi.operation-description:
+  summary: Requires a nonblank description on each declared operation.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: 'get: {summary: Read widget}
+
+      '
+    good: 'get: {summary: Read widget, description: Returns the widget}
+
+      '
+    explanation: The operation description is missing.
+openapi.operation-id:
+  summary: Requires operation IDs when enabled and checks an optional regular expression against declared
+    IDs.
+  parameters:
+    pattern: Optional Go regular expression for operation IDs.
+    required: Require a nonempty operation ID; true by default.
+  example-options:
+    required: true
+  example:
+    language: yaml
+    bad: 'get: {summary: Read widget}
+
+      '
+    good: 'get: {operationId: getWidget, summary: Read widget}
+
+      '
+    explanation: The required operation ID is missing.
+openapi.operation-id-unique:
+  summary: Reports duplicate nonempty operation IDs across the document.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: 'get: {operationId: read}
+
+      post: {operationId: read}
+
+      '
+    good: 'get: {operationId: read}
+
+      post: {operationId: create}
+
+      '
+    explanation: Two operations share the same operation ID.
+openapi.operation-success-response:
+  summary: Requires each operation to declare a response in one of the accepted status classes.
+  parameters:
+    classes: Accepted HTTP response class prefixes, such as 2 and 3; default [2, 3].
+  example-options:
+    classes:
+    - '2'
+    - '3'
+  example:
+    language: yaml
+    bad: 'responses: {''400'': {description: Invalid request}}
+
+      '
+    good: 'responses: {''200'': {description: OK}}
+
+      '
+    explanation: The operation declares no success response in an accepted status class.
+openapi.operation-summary:
+  summary: Requires a nonblank summary on each declared operation.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: 'get: {description: Returns the widget}
+
+      '
+    good: 'get: {summary: Read widget, description: Returns the widget}
+
+      '
+    explanation: The operation summary is missing.
+openapi.pagination:
+  summary: Checks pagination fields on classified List/Query operations and explicitly named collection
+    operations.
+  parameters:
+    collection-operations: Nonempty list of operation IDs treated as collections; required for this general
+      check.
+    max-results-field: Name of the maximum-results field or parameter; default maxResults.
+    next-token-field: Name of the next-token field or parameter; default nextToken.
+    pagination-field: Name of the containing pagination object; default paginationContext.
+  example-options:
+    collection-operations:
+    - ListWidgets
+    max-results-field: maxResults
+    next-token-field: nextToken
+    pagination-field: paginationContext
+  example:
+    language: yaml
+    bad: 'operationId: ListWidgets
+
+      parameters: []
+
+      '
+    good: "operationId: ListWidgets\nparameters:\n  - {name: nextToken, in: query, schema: {type: string}}\n\
+      \  - {name: maxResults, in: query, schema: {type: integer}}\n"
+    explanation: The configured collection operation lacks pagination request fields.
+openapi.parameter-description:
+  summary: Requires nonblank descriptions on declared path-level and operation-level parameters.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: 'name: widget
+
+      in: path
+
+      required: true
+
+      schema: {type: string}
+
+      '
+    good: 'name: widget
+
+      in: path
+
+      required: true
+
+      description: Widget identifier
+
+      schema: {type: string}
+
+      '
+    explanation: The parameter description is missing.
+openapi.parameters-unique:
+  summary: Reports duplicate parameters identified by name and location, while respecting operation-level
+    overrides.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: "parameters:\n  - {name: token, in: query}\n  - {name: token, in: query}\n"
+    good: "parameters:\n  - {name: token, in: query}\n  - {name: limit, in: query}\n"
+    explanation: The same name and location pair is declared twice in one parameter list.
+openapi.path-naming:
+  summary: Requires kebab-case literal path segments, excluding path variables and supported standard
+    .well-known and jwks.json segments.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: '/widgetGroups: {}
+
+      '
+    good: '/widget-groups: {}
+
+      '
+    explanation: The literal path segment uses capital letters rather than kebab case.
+openapi.path-parameters:
+  summary: Requires every path-template variable to have a required path parameter and rejects unused
+    declared path parameters.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: "/widgets/{widget}:\n  get: {parameters: []}\n"
+    good: "/widgets/{widget}:\n  get:\n    parameters:\n      - {name: widget, in: path, required: true,\
+      \ schema: {type: string}}\n"
+    explanation: The path variable lacks a required path parameter declaration.
+openapi.path-syntax:
+  summary: Checks leading slashes, duplicate separators, empty path variables and malformed template braces.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: 'widgets//{id}: {}
+
+      '
+    good: '/widgets/{id}: {}
+
+      '
+    explanation: The path lacks a leading slash and contains a duplicate separator.
+openapi.property-camel-case:
+  summary: Requires schema property names to use camelCase.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: 'properties: {widget_id: {type: string}}
+
+      '
+    good: 'properties: {widgetId: {type: string}}
+
+      '
+    explanation: The property name uses an underscore rather than camel case.
+openapi.ref-siblings:
+  summary: Reports unsupported sibling fields next to reference objects, respecting applicable OpenAPI
+    version behavior.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: 'openapi: 3.0.3
+
+      # Reference object
+
+      $ref: ''#/components/responses/Success''
+
+      description: Replacement
+
+      '
+    good: 'openapi: 3.0.3
+
+      # Reference object
+
+      $ref: ''#/components/responses/Success''
+
+      '
+    explanation: OpenAPI 3.0 reference objects cannot declare this sibling field.
+openapi.request-response-example:
+  summary: Requires request and response media examples in the public visitor model.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: 'schema: {type: string}
+
+      '
+    good: 'schema: {type: string}
+
+      example: ready
+
+      '
+    explanation: The request or response media object needs an example.
+openapi.schema-description:
+  summary: Requires descriptions on visited schema definitions.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: 'Widget: {type: object}
+
+      '
+    good: 'Widget: {type: object, description: A widget}
+
+      '
+    explanation: The schema definition has no description.
+openapi.schema-naming:
+  summary: Requires component schema names to start with an uppercase letter and contain letters and digits
+    (PascalCase).
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: 'widget_record: {type: object}
+
+      '
+    good: 'WidgetRecord: {type: object}
+
+      '
+    explanation: The component name must start with an uppercase letter and use only letters and digits.
+openapi.security-references:
+  summary: Checks security scheme names and OAuth scope references used by effective operation security.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: 'security: [{missingScheme: []}]
+
+      '
+    good: 'security: [{apiKey: []}]
+
+      # Declare apiKey in components.securitySchemes
+
+      '
+    explanation: The security requirement references a scheme absent from the declared components.
+openapi.server-policy:
+  summary: Checks declared server URLs against allowed protocols and optional exact host restrictions.
+  parameters:
+    hosts: Optional exact server-host allowlist; an empty list permits any host.
+    protocols: Allowed server URL schemes; default [https].
+  example-options:
+    hosts: []
+    protocols:
+    - https
+  example:
+    language: yaml
+    bad: 'servers: [{url: http://api.example.test}]
+
+      '
+    good: 'servers: [{url: https://api.example.test}]
+
+      '
+    explanation: The example policy permits HTTPS rather than HTTP.
+openapi.server-variables:
+  summary: Checks templated server-variable declarations, defaults and enum membership.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: 'url: https://{host}
+
+      variables: {}
+
+      '
+    good: "url: https://{host}\nvariables:\n  host: {default: api.example.test}\n"
+    explanation: The URL placeholder lacks a declared variable with a default.
+openapi.spec-structure:
+  summary: Reports basic malformed OpenAPI document structure and parser model errors.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: 'openapi: 3.0.3
+
+      info: {title: API}
+
+      '
+    good: 'openapi: 3.0.3
+
+      info: {title: API, version: v1}
+
+      paths: {}
+
+      '
+    explanation: The document omits required structural fields such as info.version and paths.
+openapi.tags-defined:
+  summary: Checks duplicate declared tags and operation tags that have no top-level definition.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: 'tags: [widgets]
+
+      '
+    good: 'tags: [widgets]
+
+      # At the document root
+
+      # tags: [{name: widgets}]
+
+      '
+    explanation: The operation tag needs a matching top-level tag definition.
+openapi.unused-components:
+  summary: Reports component definitions not reached by the document reference graph.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: "components:\n  schemas:\n    Unused: {type: string}\n"
+    good: "components:\n  schemas: {}\n"
+    explanation: The unused schema has no reachable reference. Remove it or reference it from the API.
+portos.async-response:
+  summary: Requires Async success bodies to reference the configured identifier object with only one string
+    ID property.
+  parameters:
+    async-schema: Canonical shared asynchronous identifier schema name; default AsyncIdentifier.
+    item-id-field: ID property name used to correlate request and result items; default id.
+  example-options:
+    async-schema: AsyncIdentifier
+    item-id-field: id
+  notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
+    shared schema shapes and backend contract tests. Schema inspection cannot prove runtime behavior.
+  example:
+    language: yaml
+    bad: 'operationId: SendAsyncWidget
+
+      # Success schema
+
+      type: object
+
+      properties: {id: {type: string}, result: {type: object}}
+
+      '
+    good: 'operationId: SendAsyncWidget
+
+      # Success schema
+
+      $ref: ''#/components/schemas/AsyncIdentifier''
+
+      # AsyncIdentifier declares only id: {type: string}
+
+      '
+    explanation: An Async success must reference the configured identifier object and contain only the
+      identifier field.
+portos.batch-contract:
+  summary: Requires Batch request item objects and synchronous response result objects to declare the
+    configured ID field.
+  parameters:
+    item-id-field: ID property name used to correlate request and result items; default id.
+    items-field: Batch request item-array property name; default items.
+    results-field: Collection or Batch result-array property name; default results.
+  example-options:
+    item-id-field: id
+    items-field: items
+    results-field: results
+  notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
+    shared schema shapes and backend contract tests. Schema inspection cannot prove runtime behavior.
+  example:
+    language: yaml
+    bad: 'operationId: SendBatchWidgets
+
+      # Request item schema
+
+      type: object
+
+      properties: {value: {type: string}}
+
+      '
+    good: 'operationId: SendBatchWidgets
+
+      # Request item schema
+
+      type: object
+
+      properties: {id: {type: string}, value: {type: string}}
+
+      '
+    explanation: Each Batch request item and synchronous result item must declare the configured ID field.
+portos.batch-outcomes:
+  summary: Requires synchronous Batch results and errors arrays with required request-compatible IDs and
+    a shared error object on each failure.
+  parameters:
+    error-schema: Canonical schema name required in error-body references; empty disables reference-name
+      checking in openapi.error-response.
+    errors-field: Batch failure-array property name; default errors.
+    item-id-field: ID property name used to correlate request and result items; default id.
+    items-field: Batch request item-array property name; default items.
+    results-field: Collection or Batch result-array property name; default results.
+  example-options:
+    error-schema: ErrorResponse
+    errors-field: errors
+    item-id-field: id
+    items-field: items
+    results-field: results
+  notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
+    shared schema shapes and backend contract tests. Schema inspection cannot prove runtime behavior.
+  example:
+    language: yaml
+    bad: 'operationId: SendBatchWidgets
+
+      # Response schema
+
+      type: object
+
+      properties: {results: {type: array}}
+
+      '
+    good: "operationId: SendBatchWidgets\n# Response schema\ntype: object\nrequired: [results, errors]\n\
+      properties:\n  results: {type: array, items: {type: object, required: [id], properties: {id: {type:\
+      \ string}}}}\n  errors:\n    type: array\n    items:\n      type: object\n      required: [id, error]\n\
+      \      properties:\n        id: {type: string}\n        error: {$ref: '#/components/schemas/ErrorResponse'}\n"
+    explanation: The synchronous Batch envelope needs results and errors arrays. Each failure needs the
+      request-compatible ID and shared error reference.
+portos.collection-response:
+  summary: Requires synchronous List/Query success objects with an array of result objects and a pagination
+    context.
+  parameters:
+    pagination-field: Name of the containing pagination object; default paginationContext.
+    results-field: Collection or Batch result-array property name; default results.
+  example-options:
+    pagination-field: paginationContext
+    results-field: results
+  notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
+    shared schema shapes and backend contract tests. Schema inspection cannot prove runtime behavior.
+  example:
+    language: yaml
+    bad: 'type: array
+
+      items: {type: object}
+
+      '
+    good: "type: object\nproperties:\n  results: {type: array, items: {type: object}}\n  paginationContext:\
+      \ {$ref: '#/components/schemas/PaginationContext'}\n"
+    explanation: List and Query return an object envelope rather than a bare array.
+portos.date-fields:
+  summary: Requires recognized or configured date properties to use an RFC 3339 string date-time schema.
+  parameters:
+    date-fields: Additional property names treated as dates alongside built-in name heuristics.
+  example-options:
+    date-fields: []
+  notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
+    shared schema shapes and backend contract tests. Schema inspection cannot prove runtime behavior.
+  example:
+    language: yaml
+    bad: 'properties: {createdAt: {type: string}}
+
+      '
+    good: 'properties: {createdAt: {type: string, format: date-time}}
+
+      '
+    explanation: A recognized date field needs the RFC 3339 date-time format.
+portos.delete-idempotent:
+  summary: 'Requires x-portos-idempotent: true on Delete contracts and rejects declared 404/410 responses
+    for absent resources.'
+  parameters: {}
+  example-options: {}
+  notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
+    shared schema shapes and backend contract tests. Schema inspection cannot prove runtime behavior.
+  example:
+    language: yaml
+    bad: 'operationId: DeleteWidget
+
+      responses: {''200'': {description: OK}, ''404'': {description: Missing}}
+
+      '
+    good: 'operationId: DeleteWidget
+
+      x-portos-idempotent: true
+
+      responses: {''200'': {description: OK}}
+
+      '
+    explanation: The contract must declare idempotency and must not fail with 404 or 410 for an absent
+      resource.
+portos.description-schema:
+  summary: Requires description properties to reference the configured shared description object.
+  parameters:
+    description-schema: Canonical shared description-object schema name; default DescriptionValue.
+  example-options:
+    description-schema: DescriptionValue
+  notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
+    shared schema shapes and backend contract tests. Schema inspection cannot prove runtime behavior.
+  example:
+    language: yaml
+    bad: 'properties: {description: {type: string}}
+
+      '
+    good: 'properties: {description: {$ref: ''#/components/schemas/DescriptionValue''}}
+
+      '
+    explanation: The description field must reference the configured shared object.
+portos.error-contract:
+  summary: Requires declared client/server/default error bodies to reference a shared object with required
+    code, message, type and integer family 400 or 500.
+  parameters:
+    error-schema: Canonical schema name required in error-body references; empty disables reference-name
+      checking in openapi.error-response.
+  example-options:
+    error-schema: ErrorResponse
+  notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
+    shared schema shapes and backend contract tests. Schema inspection cannot prove runtime behavior.
+  example:
+    language: yaml
+    bad: 'type: object
+
+      properties: {message: {type: string}}
+
+      '
+    good: "$ref: '#/components/schemas/ErrorResponse'\n# ErrorResponse schema\ntype: object\nrequired:\
+      \ [code, message, type, family]\nproperties:\n  code: {type: string}\n  message: {type: string}\n\
+      \  type: {type: string}\n  family: {type: integer, enum: [400, 500]}\n"
+    explanation: Every declared error body needs the shared reference. Its schema must require code, message,
+      type and family with the configured types.
+portos.etag-conflict:
+  summary: Requires 409 and rejects 412 when request headers declare If-Match or If-None-Match.
+  parameters: {}
+  example-options: {}
+  notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
+    shared schema shapes and backend contract tests. Schema inspection cannot prove runtime behavior.
+  example:
+    language: yaml
+    bad: 'parameters: [{name: If-Match, in: header, schema: {type: string}}]
+
+      responses: {''200'': {description: OK}, ''412'': {description: Failed}}
+
+      '
+    good: 'parameters: [{name: If-Match, in: header, schema: {type: string}}]
+
+      responses: {''200'': {description: OK}, ''409'': {description: Conflict}}
+
+      '
+    explanation: An ETag request conflict uses 409 instead of 412.
+portos.name-schema:
+  summary: Requires name properties to reference the configured shared name object.
+  parameters:
+    name-schema: Canonical shared name-object schema name; default NameValue.
+  example-options:
+    name-schema: NameValue
+  notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
+    shared schema shapes and backend contract tests. Schema inspection cannot prove runtime behavior.
+  example:
+    language: yaml
+    bad: 'properties: {name: {type: string}}
+
+      '
+    good: 'properties: {name: {$ref: ''#/components/schemas/NameValue''}}
+
+      '
+    explanation: The name field must reference the configured NameValue object.
+portos.open-enums:
+  summary: Requires open enums with varnames, except exact supported closed sort-direction and error-family
+    protocol discriminants.
+  parameters: {}
+  example-options: {}
+  notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
+    shared schema shapes and backend contract tests. Schema inspection cannot prove runtime behavior.
+  example:
+    language: yaml
+    bad: 'type: string
+
+      enum: [READY, STOPPED]
+
+      '
+    good: 'type: string
+
+      enum: [READY, STOPPED]
+
+      x-enum-varnames: [Ready, Stopped]
+
+      x-extensible-enum: [READY, STOPPED]
+
+      '
+    explanation: An enum needs the open-enum declaration and matching variable names.
+portos.operation-vocabulary:
+  summary: Checks operation IDs for the supported List, Send, Delete, Query, Get and Modify vocabulary
+    with Batch and Async modifiers.
+  parameters:
+    modifiers: Enabled operation modifiers; default [Batch, Async].
+    operations: Permitted operation action vocabulary; default [List, Send, Delete, Query, Get, Modify].
+  example-options:
+    modifiers:
+    - Batch
+    - Async
+    operations:
+    - List
+    - Send
+    - Delete
+    - Query
+    - Get
+    - Modify
+  notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
+    shared schema shapes and backend contract tests. Schema inspection cannot prove runtime behavior.
+  example:
+    language: yaml
+    bad: 'operationId: CreateWidget
+
+      '
+    good: 'operationId: SendWidget
+
+      '
+    explanation: Create is outside the configured Portos action vocabulary. Use a supported action such
+      as Send.
+portos.pagination-request:
+  summary: Requires List query parameters or Query body pagination fields for nextToken and maxResults.
+  parameters:
+    max-results-field: Name of the maximum-results field or parameter; default maxResults.
+    next-token-field: Name of the next-token field or parameter; default nextToken.
+    pagination-field: Name of the containing pagination object; default paginationContext.
+  example-options:
+    max-results-field: maxResults
+    next-token-field: nextToken
+    pagination-field: paginationContext
+  notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
+    shared schema shapes and backend contract tests. Schema inspection cannot prove runtime behavior.
+  example:
+    language: yaml
+    bad: 'operationId: ListWidgets
+
+      parameters: []
+
+      '
+    good: "operationId: ListWidgets\nparameters:\n  - {name: nextToken, in: query, schema: {type: string}}\n\
+      \  - {name: maxResults, in: query, schema: {type: integer}}\n"
+    explanation: List needs the pagination query parameters. Query instead puts the same fields in its
+      object body.
+portos.pagination-response:
+  summary: Requires a pagination context object declaring a string next token and integer maximum results.
+  parameters:
+    max-results-field: Name of the maximum-results field or parameter; default maxResults.
+    next-token-field: Name of the next-token field or parameter; default nextToken.
+    pagination-field: Name of the containing pagination object; default paginationContext.
+  example-options:
+    max-results-field: maxResults
+    next-token-field: nextToken
+    pagination-field: paginationContext
+  notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
+    shared schema shapes and backend contract tests. Schema inspection cannot prove runtime behavior.
+  example:
+    language: yaml
+    bad: 'paginationContext: {type: object}
+
+      '
+    good: "paginationContext:\n  type: object\n  properties: {nextToken: {type: string}, maxResults: {type:\
+      \ integer}}\n"
+    explanation: The pagination context must declare nextToken and maxResults with the expected types.
+portos.path-description:
+  summary: Requires a nonblank description on every request Path Item, including empty Path Items.
+  parameters: {}
+  example-options: {}
+  notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
+    shared schema shapes and backend contract tests. Schema inspection cannot prove runtime behavior.
+  example:
+    language: yaml
+    bad: '/v2/widgets: {}
+
+      '
+    good: "/v2/widgets:\n  description: Widget collection\n"
+    explanation: Every Path Item needs a nonblank description.
+portos.path-kebab-case:
+  summary: Requires lowercase kebab-case literal request path segments; full path variables are excluded.
+  parameters: {}
+  example-options: {}
+  notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
+    shared schema shapes and backend contract tests. Schema inspection cannot prove runtime behavior.
+  example:
+    language: yaml
+    bad: '/v2/WidgetGroups: {}
+
+      '
+    good: '/v2/widget-groups: {}
+
+      '
+    explanation: Literal path segments must be lowercase kebab case.
+portos.query-graph:
+  summary: Requires Query request query fields to reference the canonical recursive Query graph with comparison,
+    boolean and text-match operators.
+  parameters:
+    query-schema: Canonical recursive query schema name; default Query.
+  example-options:
+    query-schema: Query
+  notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
+    shared schema shapes and backend contract tests. Schema inspection cannot prove runtime behavior.
+  example:
+    language: yaml
+    bad: 'properties: {query: {type: string}}
+
+      '
+    good: 'properties: {query: {$ref: ''#/components/schemas/Query''}}
+
+      '
+    explanation: The query field must reference the configured recursive Query graph. The canonical graph
+      must declare its required operator structures.
+portos.query-request:
+  summary: Requires classified Query operations to use POST with an object request body.
+  parameters: {}
+  example-options: {}
+  notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
+    shared schema shapes and backend contract tests. Schema inspection cannot prove runtime behavior.
+  example:
+    language: yaml
+    bad: 'get: {operationId: QueryWidgets}
+
+      '
+    good: "post:\n  operationId: QueryWidgets\n  requestBody:\n    content:\n      application/json:\n\
+      \        schema: {type: object}\n"
+    explanation: Query must use POST and take an object request body.
+portos.query-sorts:
+  summary: Checks optional sorts fields in Query request graphs for arrays of closed objects containing
+    required direction and key.
+  parameters:
+    sorts-field: Optional Query sort-array property name; default sorts.
+  example-options:
+    sorts-field: sorts
+  notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
+    shared schema shapes and backend contract tests. Schema inspection cannot prove runtime behavior.
+  example:
+    language: yaml
+    bad: 'sorts: {type: array, items: {type: string}}
+
+      '
+    good: "sorts:\n  type: array\n  items:\n    type: object\n    additionalProperties: false\n    required:\
+      \ [direction, key]\n    properties:\n      direction: {type: string, enum: [ASCENDING, DESCENDING]}\n\
+      \      key: {type: string}\n"
+    explanation: Sort items must be closed objects with exactly the required direction and key fields.
+portos.success-status:
+  summary: Requires a 200 or 202 success response and rejects other declared 2xx success statuses.
+  parameters: {}
+  example-options: {}
+  notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
+    shared schema shapes and backend contract tests. Schema inspection cannot prove runtime behavior.
+  example:
+    language: yaml
+    bad: 'responses: {''201'': {description: Created}}
+
+      '
+    good: 'responses: {''200'': {description: OK}}
+
+      '
+    explanation: Portos success statuses are restricted to 200 and 202.
+portos.version-prefix:
+  summary: Requires request paths to begin with a positive major version such as /v2 or /v3.
+  parameters: {}
+  example-options: {}
+  notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
+    shared schema shapes and backend contract tests. Schema inspection cannot prove runtime behavior.
+  example:
+    language: yaml
+    bad: '/widgets: {}
+
+      '
+    good: '/v2/widgets: {}
+
+      '
+    explanation: Portos paths need a positive major-version prefix.
+schema.no-anonymous-objects:
+  summary: Requires nested object structures in standalone schemas to be named through references rather
+    than declared anonymously.
+  parameters: {}
+  example-options: {}
+  notes: Use --kind schema when linting standalone YAML or JSON schemas. See [getting started](../getting-started.md).
+  example:
+    language: yaml
+    bad: "properties:\n  address:\n    type: object\n    properties: {city: {type: string}}\n"
+    good: "properties:\n  address: {$ref: '#/definitions/Address'}\n"
+    explanation: Nested object structures must use named references rather than inline anonymous objects.
+schema.property-camel-case:
+  summary: Requires standalone schema property names to use camelCase.
+  parameters: {}
+  example-options: {}
+  notes: Use --kind schema when linting standalone YAML or JSON schemas. See [getting started](../getting-started.md).
+  example:
+    language: yaml
+    bad: 'properties: {widget_id: {type: string}}
+
+      '
+    good: 'properties: {widgetId: {type: string}}
+
+      '
+    explanation: The property name uses an underscore rather than camel case.

@@ -46,8 +46,8 @@ The internal requirements are independent rules. In OpenAPI, `portos-defaults` c
 - [x] `portos.query-sorts`: optional sorting is a list of closed objects containing required direction ASCENDING/DESCENDING and key:string.
 - [x] `portos.batch-outcomes`: synchronous required results/errors lists, request-compatible IDs, and a shared ErrorResponse for each failure; actual ID correlation requires service tests.
 
-- [x] `text.no-dashes`: no hyphens or Unicode dashes in prose, excluding code and URL targets. Markdown bullet/fence syntax is not prose.
-- [x] `text.no-load-bearing`: prohibit that phrase in prose, including its spelling with a hyphen; exclude code and URL targets.
+- [x] `portos.prose-dashes` (`text.matcher`): no hyphens or Unicode dashes in prose, excluding code and URL targets. Markdown bullet/fence syntax is not prose.
+- [x] `portos.banned-phrases` (`text.matcher`): prohibit that phrase in prose, including its spelling with a hyphen; exclude code and URL targets.
 
 Backend evidence: `portos-backend/api/restful_interfaces/components/schemas/Query.yaml`, `QueryComparator.yaml`, `PaginationContext.yaml`, `EndpointQueryRequest.yaml`, and `EndpointQueryResponse.yaml`. The graph contains match, lessThan, greaterThan, and, or, not, patternMatch, and freeformMatch. Comparators have string key/value fields. Response collection and pagination shapes are checked independently because OpenAPI has no Go generics.
 
