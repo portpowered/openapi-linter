@@ -271,9 +271,10 @@ func TestAPIReferenceFindings_BaselinesSurviveRelocation(t *testing.T) {
 				t.Fatalf("%s: %#v %v", id, findings, pass.Err())
 			}
 			pointer := "#/paths/~1groups"
-			if id == "portos.write-methods" {
+			switch id {
+			case "portos.write-methods":
 				pointer += "/options"
-			} else if id == "portos.upsert-headers" || id == "portos.etag-conflict" {
+			case "portos.upsert-headers", "portos.etag-conflict":
 				pointer += "/post"
 			}
 			if findings[0].Pointer != pointer || findings[0].Line == 0 || strings.Contains(findings[0].Message, root) {
@@ -367,14 +368,15 @@ func TestUpsertChecks_SharedReferenceSuppressionsStayOperationSpecific(t *testin
 			}
 			rule := Rule{ID: id, Check: id}
 			method, want := "post", 3
-			if id == "portos.message-request" {
+			switch id {
+			case "portos.message-request":
 				var options yaml.Node
 				if err := yaml.Unmarshal([]byte("paths: ['^/(alpha|beta)$']"), &options); err != nil {
 					t.Fatal(err)
 				}
 				rule.Options = *options.Content[0]
 				want = 5 // OPTIONS is also a matching operation.
-			} else if id == "portos.write-methods" {
+			case "portos.write-methods":
 				method, want = "options", 1
 			}
 			pack := Pack{Version: 1, Rules: []Rule{rule}, Suppressions: []Suppression{{Rule: id, Path: "api.yaml", Pointer: "#/paths/~1alpha/" + method, Reason: "only this operation is exempt"}}}
