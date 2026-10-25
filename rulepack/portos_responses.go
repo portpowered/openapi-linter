@@ -24,6 +24,13 @@ func optionsFor(id string) apiOptions {
 	if id == "portos.error-contract" || id == "portos.batch-outcomes" {
 		o.ErrorSchema = "ErrorResponse"
 	}
+	if id == "portos.upsert-headers" {
+		o.IdempotencyHeader = "Idempotency-Key"
+	}
+	if id == "portos.message-request" {
+		o.Paths = []string{"^/message-requests$"}
+		o.Statuses = []string{"QUEUED", "IN_PROGRESS", "SUCCEEDED", "PARTIALLY_SUCCEEDED", "FAILED"}
+	}
 	return o
 }
 
@@ -143,7 +150,7 @@ func (c apiCheck) analyzePortosResponses(ctx context.Context, pass *linter.Pass)
 				if source, ok := g.sources[s.file]; ok && source.file == file {
 					pointer = source.ptr
 				}
-				message += " (" + s.file + s.ptr + ")"
+				message += " (" + sourceLocation(pass.Root, s) + ")"
 			}
 			pass.Report(linter.Diagnostic{Path: doc.Path, Pointer: pointer, Line: doc.Line(pointer), RuleID: c.id, Message: message, Severity: linter.SeverityError})
 		}

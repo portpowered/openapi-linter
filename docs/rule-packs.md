@@ -129,6 +129,10 @@ The canonical defaults are Query, AsyncIdentifier, NameValue, DescriptionValue, 
 | portos.query-graph | query-schema, default Query |
 | portos.name-schema | name-schema, default NameValue |
 | portos.description-schema | description-schema, default DescriptionValue |
+| portos.write-methods | None; only GET, POST and DELETE |
+| portos.upsert-headers | idempotency-header, default Idempotency-Key; POST/DELETE declare it, item POST and id-bearing collection POST also declare If-Match, as does every DELETE |
+| portos.path-patterns | patterns: required non-empty list of anchored path regexes; no check-level default |
+| portos.message-request | paths defaults [^/message-requests$]; statuses defaults [QUEUED, IN_PROGRESS, SUCCEEDED, PARTIALLY_SUCCEEDED, FAILED]; matching operations return 200 with required results/errors arrays and an exact status enum |
 
 Operation classification uses operation ID words; modifiers do not replace the primary operation. A resource prefix/suffix may identify the domain. Structural shape rules follow local references and allOf object properties. Query uses the backend recursive graph: match/lessThan/greaterThan comparators with string key/value, and/or arrays of Query, not referencing Query, and string patternMatch/freeformMatch. Query/List response shapes are checked separately from this query AST.
 

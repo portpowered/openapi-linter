@@ -1,5 +1,19 @@
 version: 1
 rules:
+    - id: portos.write-methods
+      check: portos.write-methods
+      severity: error
+    - id: portos.upsert-headers
+      check: portos.upsert-headers
+      severity: error
+    - id: portos.path-patterns
+      check: portos.path-patterns
+      severity: error
+      options:
+        patterns: ['^/(?:v[1-9][0-9]*/)?[a-z][a-z0-9-]*(?:/(?:\{[^/{}]+\}|[a-z][a-z0-9-]*))*$']
+    - id: portos.message-request
+      check: portos.message-request
+      severity: error
     - id: portos.operation-vocabulary
       check: portos.operation-vocabulary
       severity: error

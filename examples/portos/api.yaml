@@ -14,6 +14,8 @@ paths:
       summary: Query widgets
       description: Select widgets using a query graph and cursor pagination.
       tags: [Widgets]
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
         required: true
         content:
@@ -70,7 +72,13 @@ paths:
         required: true
         description: The widget resource ID.
         schema: {type: string}
-    patch:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      - name: If-Match
+        in: header
+        required: true
+        description: The resource ETag observed by the caller.
+        schema: {type: string}
+    post:
       operationId: widgetModify
       summary: Modify a widget
       description: Apply a modification only when the request ETag matches.
@@ -108,12 +116,26 @@ paths:
       responses:
         '200':
           description: The widget is absent; no response body is needed.
+        '412':
+          description: The resource ETag changed.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ErrorResponse'}
+              example: {code: ETAG_CONFLICT, message: Resource changed, type: etag.conflict, family: 400}
+        '428':
+          description: An If-Match header is required.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ErrorResponse'}
+              example: {code: PRECONDITION_REQUIRED, message: Supply If-Match, type: etag.required, family: 400}
   /v1/widgets/batch/modify:
     description: Modify several widgets while recording individual outcomes.
     post:
       operationId: widgetBatchModify
       summary: Modify widgets in a batch
       description: Return successes and failures correlated by each request resource ID.
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
         required: true
         content:
@@ -132,6 +154,13 @@ paths:
                   - id: widget2
                     error: {code: ETAG_CONFLICT, message: Resource changed, type: etag.conflict, family: 400}
 components:
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      description: A unique key used to replay this request.
+      schema: {type: string}
   schemas:
     ErrorResponse:
       type: object

@@ -852,8 +852,7 @@ portos.date-fields:
       '
     explanation: A recognized date field needs the RFC 3339 date-time format.
 portos.delete-idempotent:
-  summary: 'Requires x-portos-idempotent: true on Delete contracts and rejects declared 404/410 responses
-    for absent resources.'
+  summary: Requires Idempotency-Key on Delete contracts, allows 404 for unknown resources and forbids 410.
   parameters: {}
   example-options: {}
   notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
@@ -867,13 +866,12 @@ portos.delete-idempotent:
       '
     good: 'operationId: DeleteWidget
 
-      x-portos-idempotent: true
+      parameters: [{name: Idempotency-Key, in: header, schema: {type: string}}]
 
       responses: {''200'': {description: OK}}
 
       '
-    explanation: The contract must declare idempotency and must not fail with 404 or 410 for an absent
-      resource.
+    explanation: The contract declares a replay key. A fresh delete of an unknown resource may return 404; a retry replays its saved response.
 portos.description-schema:
   summary: Requires description properties to reference the configured shared description object.
   parameters:
@@ -914,7 +912,7 @@ portos.error-contract:
     explanation: Every declared error body needs the shared reference. Its schema must require code, message,
       type and family with the configured types.
 portos.etag-conflict:
-  summary: Requires 409 and rejects 412 when request headers declare If-Match or If-None-Match.
+  summary: Requires 412 and 428 when request headers declare If-Match; 409 additionally requires Idempotency-Key.
   parameters: {}
   example-options: {}
   notes: See [Portos response contracts](../portos-api.md) and [rule packs](../rule-packs.md) for composition,
@@ -923,15 +921,70 @@ portos.etag-conflict:
     language: yaml
     bad: 'parameters: [{name: If-Match, in: header, schema: {type: string}}]
 
-      responses: {''200'': {description: OK}, ''412'': {description: Failed}}
+      responses: {''200'': {description: OK}, ''409'': {description: Conflict}}
 
       '
     good: 'parameters: [{name: If-Match, in: header, schema: {type: string}}]
 
-      responses: {''200'': {description: OK}, ''409'': {description: Conflict}}
+      responses: {''200'': {description: OK}, ''412'': {description: ETag mismatch}, ''428'': {description: Missing precondition}}
 
       '
-    explanation: An ETag request conflict uses 409 instead of 412.
+    explanation: ETag mismatch uses 412 and a missing precondition uses 428. Only an operation with an idempotency key may declare 409 for an in-flight request.
+portos.write-methods:
+  summary: Allows only GET, POST and DELETE on request paths.
+  parameters: {}
+  example-options: {}
+  example:
+    language: yaml
+    bad: "paths: {/widgets: {patch: {responses: {'200': {description: OK}}}}}\n"
+    good: "paths: {/widgets: {post: {responses: {'200': {description: OK}}}}}\n"
+    explanation: Resource writes use collection POST or DELETE rather than PATCH or PUT. Protocol exceptions use explicit suppressions.
+portos.upsert-headers:
+  summary: Requires replay keys on POST and DELETE and declares If-Match on replacements and deletes.
+  parameters:
+    idempotency-header: Case-insensitive header name required on POST and DELETE; default Idempotency-Key.
+  example-options:
+    idempotency-header: Idempotency-Key
+  notes: Collection POST bodies with an id property may represent either create or replace. The header must be declared, but the server requires its value only for replacement. Local references and allOf properties are resolved.
+  example:
+    language: yaml
+    bad: "paths: {/widgets: {post: {responses: {'200': {description: OK}}}}}\n"
+    good: "paths: {/widgets: {post: {parameters: [{name: Idempotency-Key, in: header, schema: {type: string}}], responses: {'200': {description: OK}}}}}\n"
+    explanation: Every POST declares a replay key. Every DELETE, item POST and collection POST with an id-bearing body also declares If-Match.
+portos.path-patterns:
+  summary: Requires every request path to match one configured anchored regular expression.
+  parameters:
+    patterns: Required non-empty list of regular expressions anchored with ^ and $; this check has no default patterns.
+  example-options:
+    patterns: ['^/widgets(?:/\{id\})?$']
+  notes: The internal preset supplies a general collection and nested-path pattern. Applications should override it with their supported collection, item, query, message request and batch shapes. Empty Path Items are checked. Vendor paths require explicit reasoned suppressions.
+  example:
+    language: yaml
+    bad: "paths: {/widgets/rename: {post: {responses: {'200': {description: OK}}}}}\n"
+    good: "paths: {/widgets: {post: {responses: {'200': {description: OK}}}}}\n"
+    explanation: With the example configuration only the widgets collection and its id item match.
+portos.message-request:
+  summary: Requires a 200 message-request response with required results and errors arrays and an exact required status enum.
+  parameters:
+    paths: Path regular expressions identifying message request operations; default ['^/message-requests$'].
+    statuses: Exact unique values allowed in the response status enum; defaults QUEUED, IN_PROGRESS, SUCCEEDED, PARTIALLY_SUCCEEDED and FAILED.
+  example-options: {}
+  example:
+    language: yaml
+    bad: "responses: {'202': {description: Accepted}}\n"
+    good: |
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [results, errors, status]
+                properties:
+                  results: {type: array, items: {type: object}}
+                  errors: {type: array, items: {type: object}}
+                  status: {type: string, enum: [QUEUED, IN_PROGRESS, SUCCEEDED, PARTIALLY_SUCCEEDED, FAILED]}
+    explanation: A created message request returns its 200 envelope, including empty outcome lists while pending and the documented lifecycle status.
 portos.name-schema:
   summary: Requires name properties to reference the configured shared name object.
   parameters:
