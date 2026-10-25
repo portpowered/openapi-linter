@@ -833,6 +833,35 @@
   },
   {
     "defaults": {
+      "paths": [
+        "^/message-requests$"
+      ],
+      "statuses": [
+        "QUEUED",
+        "IN_PROGRESS",
+        "SUCCEEDED",
+        "PARTIALLY_SUCCEEDED",
+        "FAILED"
+      ]
+    },
+    "category": "portos",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "portos-defaults",
+      "portos:internal"
+    ],
+    "id": "portos.message-request",
+    "title": "message request",
+    "kind": "openapi",
+    "options": {
+      "paths": "[]string",
+      "statuses": "[]string"
+    },
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "defaults": {
       "name-schema": "NameValue"
     },
     "category": "portos",
@@ -968,6 +997,25 @@
   },
   {
     "defaults": {
+      "patterns": []
+    },
+    "category": "portos",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "portos-defaults",
+      "portos:internal"
+    ],
+    "id": "portos.path-patterns",
+    "title": "path patterns",
+    "kind": "openapi",
+    "options": {
+      "patterns": "[]string"
+    },
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "defaults": {
       "query-schema": "Query"
     },
     "category": "portos",
@@ -1031,6 +1079,25 @@
     "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
   },
   {
+    "defaults": {
+      "idempotency-header": "Idempotency-Key"
+    },
+    "category": "portos",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "portos-defaults",
+      "portos:internal"
+    ],
+    "id": "portos.upsert-headers",
+    "title": "upsert headers",
+    "kind": "openapi",
+    "options": {
+      "idempotency-header": "string"
+    },
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
     "category": "portos",
     "recommendedSeverity": "error",
     "fixable": false,
@@ -1040,6 +1107,19 @@
     ],
     "id": "portos.version-prefix",
     "title": "version prefix",
+    "kind": "openapi",
+    "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
+  },
+  {
+    "category": "portos",
+    "recommendedSeverity": "error",
+    "fixable": false,
+    "presets": [
+      "portos-defaults",
+      "portos:internal"
+    ],
+    "id": "portos.write-methods",
+    "title": "write methods",
     "kind": "openapi",
     "guidance": "See docs/rule-packs.md and docs/linter-roadmap.md for activation, scope, examples, and exceptions."
   },

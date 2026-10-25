@@ -24,7 +24,35 @@ func optionsFor(id string) apiOptions {
 	if id == "portos.error-contract" || id == "portos.batch-outcomes" {
 		o.ErrorSchema = "ErrorResponse"
 	}
+	if id == "portos.upsert-headers" {
+		o.IdempotencyHeader = "Idempotency-Key"
+	}
+	if id == "portos.message-request" {
+		o.Paths = []string{"^/message-requests$"}
+		o.Statuses = []string{"QUEUED", "IN_PROGRESS", "SUCCEEDED", "PARTIALLY_SUCCEEDED", "FAILED"}
+	}
 	return o
+}
+
+func headerParameter(g *graph, op operation, name string) site {
+	// Operation parameters override Path Item parameters with the same identity.
+	for _, parameters := range []site{op.op.child("parameters"), op.item.child("parameters")} {
+		for _, raw := range parameters.list() {
+			parameter := g.resolve(raw)
+			if parameter.child("in").value() == "header" && strings.EqualFold(parameter.child("name").value(), name) {
+				return parameter
+			}
+		}
+	}
+	return site{}
+}
+
+func hasHeader(g *graph, op operation, name string) bool {
+	return headerParameter(g, op, name).n != nil
+}
+
+func requiredHeader(g *graph, op operation, name string) bool {
+	return headerParameter(g, op, name).child("required").value() == "true"
 }
 
 func enumExactly(s site, values ...string) bool {
@@ -131,7 +159,7 @@ func (c apiCheck) analyzePortosResponses(ctx context.Context, pass *linter.Pass)
 				if source, ok := g.sources[s.file]; ok && source.file == file {
 					pointer = source.ptr
 				}
-				message += " (" + s.file + s.ptr + ")"
+				message += " (" + sourceLocation(pass.Root, s) + ")"
 			}
 			pass.Report(linter.Diagnostic{Path: doc.Path, Pointer: pointer, Line: doc.Line(pointer), RuleID: c.id, Message: message, Severity: linter.SeverityError})
 		}
@@ -169,6 +197,10 @@ func (c apiCheck) analyzePortosResponses(ctx context.Context, pass *linter.Pass)
 			if !op.requestPath {
 				continue
 			}
+			emit := emit
+			if c.id == "portos.etag-conflict" || c.id == "portos.delete-idempotent" {
+				emit = operationEmitter(pass, doc, root, op, c.id)
+			}
 			base, batch, async := classify(op, c.options)
 			responses := op.op.child("responses")
 			switch c.id {
@@ -185,19 +217,15 @@ func (c apiCheck) analyzePortosResponses(ctx context.Context, pass *linter.Pass)
 					emit(op.op, "declare a 200 or 202 success response")
 				}
 			case "portos.etag-conflict":
-				conditional := false
-				for _, list := range []site{op.item.child("parameters"), op.op.child("parameters")} {
-					for _, raw := range list.list() {
-						p := g.resolve(raw)
-						conditional = conditional || p.child("in").value() == "header" && (strings.EqualFold(p.child("name").value(), "If-Match") || strings.EqualFold(p.child("name").value(), "If-None-Match"))
+				if hasHeader(&g, op, "If-Match") {
+					if responses.child("412").n == nil {
+						emit(op.op, "If-Match requests must declare 412 Precondition Failed for ETag mismatches; 409 is only for in-flight idempotency keys")
 					}
-				}
-				if conditional {
-					if responses.child("409").n == nil {
-						emit(op.op, "conditional ETag requests must declare 409 Conflict")
+					if responses.child("428").n == nil {
+						emit(op.op, "If-Match requests must declare 428 Precondition Required")
 					}
-					if responses.child("412").n != nil {
-						emit(responses.child("412"), "Portos ETag conflicts use 409, not 412")
+					if responses.child("409").n != nil && responses.child("412").n != nil && !hasHeader(&g, op, "Idempotency-Key") {
+						emit(responses.child("409"), "409 Conflict requires Idempotency-Key for in-flight requests; ETag mismatches use 412")
 					}
 				}
 			case "portos.error-contract":
@@ -219,13 +247,11 @@ func (c apiCheck) analyzePortosResponses(ctx context.Context, pass *linter.Pass)
 				}
 			case "portos.delete-idempotent":
 				if base == "Delete" || op.method == "delete" {
-					if op.op.child("x-portos-idempotent").value() != "true" {
-						emit(op.op, "delete operations must declare x-portos-idempotent: true; deleting a missing resource succeeds")
+					if !requiredHeader(&g, op, "Idempotency-Key") {
+						emit(op.op, "delete operations must declare a required Idempotency-Key header for replay")
 					}
-					for _, status := range []string{"404", "410"} {
-						if responses.child(status).n != nil {
-							emit(responses.child(status), "idempotent delete must not fail for an absent resource")
-						}
+					if responses.child("410").n != nil {
+						emit(responses.child("410"), "delete operations use 404 for an unknown resource, not 410")
 					}
 				}
 			case "portos.query-sorts":

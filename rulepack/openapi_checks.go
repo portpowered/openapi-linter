@@ -36,6 +36,10 @@ type apiOptions struct {
 	ErrorSchema          string   `yaml:"error-schema"`
 	DateFields           []string `yaml:"date-fields"`
 	CollectionOperations []string `yaml:"collection-operations"`
+	IdempotencyHeader    string   `yaml:"idempotency-header"`
+	Patterns             []string `yaml:"patterns"`
+	Paths                []string `yaml:"paths"`
+	Statuses             []string `yaml:"statuses"`
 }
 type apiCheck struct {
 	id      string
@@ -50,6 +54,9 @@ func apiFactory(id string) Factory {
 		}
 		c := apiCheck{id: id, options: optionsFor(id)}
 		if e := DecodeOptions(n, &c.options); e != nil {
+			return nil, e
+		}
+		if e := validateUpsertOptions(id, c.options); e != nil {
 			return nil, e
 		}
 		if len(c.options.Operations) == 0 || len(c.options.Classes) == 0 {
@@ -356,6 +363,10 @@ func classify(op operation, options apiOptions) (base string, batch, async bool)
 }
 
 func (c apiCheck) Analyze(ctx context.Context, pass *linter.Pass) {
+	if portosUpsertRule(c.id) {
+		c.analyzePortosUpsert(ctx, pass)
+		return
+	}
 	if portosResponseRule(c.id) {
 		c.analyzePortosResponses(ctx, pass)
 		return
@@ -383,7 +394,7 @@ func (c apiCheck) Analyze(ctx context.Context, pass *linter.Pass) {
 				if source, ok := g.sources[s.file]; ok && source.file == file {
 					pointer = source.ptr
 				}
-				msg += " (" + s.file + s.ptr + ")"
+				msg += " (" + sourceLocation(pass.Root, s) + ")"
 			}
 			pass.Report(linter.Diagnostic{Path: doc.Path, Pointer: pointer, Line: doc.Line(pointer), RuleID: c.id, Message: msg, Severity: linter.SeverityError})
 		}

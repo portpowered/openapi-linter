@@ -129,6 +129,10 @@ The canonical defaults are Query, AsyncIdentifier, NameValue, DescriptionValue, 
 | portos.query-graph | query-schema, default Query |
 | portos.name-schema | name-schema, default NameValue |
 | portos.description-schema | description-schema, default DescriptionValue |
+| portos.write-methods | None; only GET, POST and DELETE |
+| portos.upsert-headers | idempotency-header, default Idempotency-Key; required on POST/DELETE; item POST and DELETE require If-Match, while id-bearing collection POST declares optional If-Match for replacements; operation parameters override inherited parameters |
+| portos.path-patterns | patterns: required non-empty list of anchored path regexes; no check-level default |
+| portos.message-request | paths defaults [^/message-requests$]; statuses defaults [QUEUED, IN_PROGRESS, SUCCEEDED, PARTIALLY_SUCCEEDED, FAILED]; matching operations return 200 with required results/errors arrays and an exact status enum |
 
 Operation classification uses operation ID words; modifiers do not replace the primary operation. A resource prefix/suffix may identify the domain. Structural shape rules follow local references and allOf object properties. Query uses the backend recursive graph: match/lessThan/greaterThan comparators with string key/value, and/or arrays of Query, not referencing Query, and string patternMatch/freeformMatch. Query/List response shapes are checked separately from this query AST.
 
@@ -163,4 +167,4 @@ OpenAPI has no automatic semantic fixes. `Diagnostic.Pointer` and `Line` locate 
 
 See [Google API rules and analysis](google-api.md) for `openapi:google`, `google-defaults`, 16 checks and their five paired contract groups. These are opt-in REST projections of the AIPs.
 
-See [Portos response and schema contracts](portos-api.md) for the eight additional internal rules, shared errors and Sort objects, batch correlation shape, delete idempotency declaration, and service-test requirements.
+See [Portos response and schema contracts](portos-api.md) for the response rules, shared errors and Sort objects, batch correlation shape, and service-test requirements. `portos.etag-conflict` requires 412 and 428 for `If-Match`; 409 is reserved for operations declaring `Idempotency-Key`. `portos.delete-idempotent` requires that header, allows 404 and forbids 410; `x-portos-idempotent` no longer controls it.

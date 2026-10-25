@@ -7,6 +7,12 @@ import (
 
 func optionNames(id string) []string {
 	switch id {
+	case "portos.upsert-headers":
+		return []string{"idempotency-header"}
+	case "portos.path-patterns":
+		return []string{"patterns"}
+	case "portos.message-request":
+		return []string{"paths", "statuses"}
 	case "portos.error-contract":
 		return []string{"error-schema"}
 	case "portos.query-sorts":
