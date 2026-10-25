@@ -163,4 +163,4 @@ OpenAPI has no automatic semantic fixes. `Diagnostic.Pointer` and `Line` locate 
 
 See [Google API rules and analysis](google-api.md) for `openapi:google`, `google-defaults`, 16 checks and their five paired contract groups. These are opt-in REST projections of the AIPs.
 
-See [Portos response and schema contracts](portos-api.md) for the eight additional internal rules, shared errors and Sort objects, batch correlation shape, delete idempotency declaration, and service-test requirements.
+See [Portos response and schema contracts](portos-api.md) for the response rules, shared errors and Sort objects, batch correlation shape, and service-test requirements. `portos.etag-conflict` requires 412 and 428 for `If-Match`; 409 is reserved for operations declaring `Idempotency-Key`. `portos.delete-idempotent` requires that header, allows 404 and forbids 410; `x-portos-idempotent` no longer controls it.

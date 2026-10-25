@@ -53,9 +53,9 @@ func TestPortosResponsePolicyBehavior(t *testing.T) {
 		{"204 forbidden", "success-status", "/v2/groups", "delete", "responses: {'200': {}, '204': {}}", 1},
 		{"wildcard forbidden", "success-status", "/v2/groups", "get", "responses: {'2XX': {}}", 2},
 		{"success missing", "success-status", "/v2/groups", "get", "responses: {'400': {}}", 1},
-		{"ETag conflict", "etag-conflict", "/v2/groups/{id}", "patch", conditionalHeaders + "responses: {'200': {}, '409': {}}", 0},
-		{"ETag missing conflict", "etag-conflict", "/v2/groups/{id}", "patch", conditionalHeaders + "responses: {'200': {}}", 1},
-		{"ETag 412", "etag-conflict", "/v2/groups/{id}", "patch", conditionalHeaders + "responses: {'200': {}, '409': {}, '412': {}}", 1},
+		{"ETag conflict", "etag-conflict", "/v2/groups/{id}", "patch", conditionalHeaders + "responses: {'200': {}, '412': {}, '428': {}}", 0},
+		{"ETag missing conflict", "etag-conflict", "/v2/groups/{id}", "patch", conditionalHeaders + "responses: {'200': {}}", 2},
+		{"ETag 412", "etag-conflict", "/v2/groups/{id}", "patch", conditionalHeaders + "responses: {'200': {}, '409': {}, '412': {}, '428': {}}", 1},
 		{"unconditional 412", "etag-conflict", "/v2/groups/{id}", "patch", "responses: {'200': {}, '412': {}}", 0},
 		{"If None Match", "etag-conflict", "/v2/groups/{id}", "patch", strings.ReplaceAll(conditionalHeaders, "If-Match", "if-none-match") + "responses: {'409': {}}", 0},
 		{"query parameter is not header", "etag-conflict", "/v2/groups/{id}", "patch", strings.ReplaceAll(conditionalHeaders, "in: header", "in: query") + "responses: {'200': {}}", 0},
@@ -70,9 +70,9 @@ func TestPortosResponsePolicyBehavior(t *testing.T) {
 		{"major root", "version-prefix", "/v12", "get", "responses: {'200': {}}", 0},
 		{"missing prefix", "version-prefix", "/groups", "get", "responses: {'200': {}}", 1},
 		{"minor prefix", "version-prefix", "/v2.1/groups", "get", "responses: {'200': {}}", 1},
-		{"delete explicit", "delete-idempotent", "/v2/groups/{id}", "delete", "x-portos-idempotent: true, responses: {'200': {}}", 0},
+		{"delete explicit", "delete-idempotent", "/v2/groups/{id}", "delete", "parameters: [{name: Idempotency-Key, in: header}], responses: {'200': {}}", 0},
 		{"delete missing declaration", "delete-idempotent", "/v2/groups/{id}", "delete", "responses: {'200': {}}", 1},
-		{"delete absent failures", "delete-idempotent", "/v2/groups/{id}", "delete", "x-portos-idempotent: true, responses: {'200': {}, '404': {}, '410': {}}", 2},
+		{"delete absent failures", "delete-idempotent", "/v2/groups/{id}", "delete", "parameters: [{name: Idempotency-Key, in: header}], responses: {'200': {}, '404': {}, '410': {}}", 1},
 		{"get can be missing", "delete-idempotent", "/v2/groups/{id}", "get", "responses: {'404': {}}", 0},
 	}
 	for _, c := range cases {
@@ -318,12 +318,12 @@ webhooks:
 	if got := checkAPI(t, "portos.version-prefix", source, ""); len(got) != 0 {
 		t.Fatalf("empty versioned paths %#v", got)
 	}
-	source = responsePolicySource("/v2/groups", "post", "GroupModify", "responses: {'200': {}, '409': {}}")
+	source = responsePolicySource("/v2/groups", "post", "GroupModify", "responses: {'200': {}, '412': {}, '428': {}}")
 	source = strings.Replace(source, "{post: {operationId", "{parameters: [{name: IF-MATCH, in: header, schema: {type: string}}], post: {operationId", 1)
 	if got := checkAPI(t, "portos.etag-conflict", source, ""); len(got) != 0 {
 		t.Fatalf("inherited ETag %#v", got)
 	}
-	if got := checkAPI(t, "portos.etag-conflict", strings.ReplaceAll(source, "'409': {}", "'412': {}"), ""); len(got) != 2 {
+	if got := checkAPI(t, "portos.etag-conflict", strings.ReplaceAll(source, "'412': {}, '428': {}", "'409': {}"), ""); len(got) != 2 {
 		t.Fatalf("inherited ETag conflict mismatch %#v", got)
 	}
 }

@@ -27,6 +27,18 @@ func optionsFor(id string) apiOptions {
 	return o
 }
 
+func hasHeader(g *graph, op operation, name string) bool {
+	for _, parameters := range []site{op.item.child("parameters"), op.op.child("parameters")} {
+		for _, raw := range parameters.list() {
+			parameter := g.resolve(raw)
+			if parameter.child("in").value() == "header" && strings.EqualFold(parameter.child("name").value(), name) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func enumExactly(s site, values ...string) bool {
 	entries := s.child("enum").list()
 	if len(entries) != len(values) {
@@ -185,19 +197,15 @@ func (c apiCheck) analyzePortosResponses(ctx context.Context, pass *linter.Pass)
 					emit(op.op, "declare a 200 or 202 success response")
 				}
 			case "portos.etag-conflict":
-				conditional := false
-				for _, list := range []site{op.item.child("parameters"), op.op.child("parameters")} {
-					for _, raw := range list.list() {
-						p := g.resolve(raw)
-						conditional = conditional || p.child("in").value() == "header" && (strings.EqualFold(p.child("name").value(), "If-Match") || strings.EqualFold(p.child("name").value(), "If-None-Match"))
+				if hasHeader(&g, op, "If-Match") {
+					if responses.child("412").n == nil {
+						emit(op.op, "If-Match requests must declare 412 Precondition Failed for ETag mismatches; 409 is only for in-flight idempotency keys")
 					}
-				}
-				if conditional {
-					if responses.child("409").n == nil {
-						emit(op.op, "conditional ETag requests must declare 409 Conflict")
+					if responses.child("428").n == nil {
+						emit(op.op, "If-Match requests must declare 428 Precondition Required")
 					}
-					if responses.child("412").n != nil {
-						emit(responses.child("412"), "Portos ETag conflicts use 409, not 412")
+					if responses.child("409").n != nil && responses.child("412").n != nil && !hasHeader(&g, op, "Idempotency-Key") {
+						emit(responses.child("409"), "409 Conflict requires Idempotency-Key for in-flight requests; ETag mismatches use 412")
 					}
 				}
 			case "portos.error-contract":
@@ -219,13 +227,11 @@ func (c apiCheck) analyzePortosResponses(ctx context.Context, pass *linter.Pass)
 				}
 			case "portos.delete-idempotent":
 				if base == "Delete" || op.method == "delete" {
-					if op.op.child("x-portos-idempotent").value() != "true" {
-						emit(op.op, "delete operations must declare x-portos-idempotent: true; deleting a missing resource succeeds")
+					if !hasHeader(&g, op, "Idempotency-Key") {
+						emit(op.op, "delete operations must declare an Idempotency-Key header for replay")
 					}
-					for _, status := range []string{"404", "410"} {
-						if responses.child(status).n != nil {
-							emit(responses.child(status), "idempotent delete must not fail for an absent resource")
-						}
+					if responses.child("410").n != nil {
+						emit(responses.child("410"), "delete operations use 404 for an unknown resource, not 410")
 					}
 				}
 			case "portos.query-sorts":

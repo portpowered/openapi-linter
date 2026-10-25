@@ -83,7 +83,13 @@ paths:
       responses:
         '200':
           description: Modification completed.
-        '409':
+        '428':
+          description: The request requires an If-Match header.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ErrorResponse'}
+              example: {code: PRECONDITION_REQUIRED, message: Supply If-Match, type: etag.required, family: 400}
+        '412':
           description: The request ETag conflicts with the current resource version.
           content:
             application/json:
@@ -93,7 +99,12 @@ paths:
       operationId: widgetDelete
       summary: Delete a widget
       description: Remove the widget; repeat requests succeed when it is already absent.
-      x-portos-idempotent: true
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          description: Replay key for this deletion.
+          schema: {type: string}
       responses:
         '200':
           description: The widget is absent; no response body is needed.
