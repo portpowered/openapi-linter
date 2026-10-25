@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	linter "github.com/portpowered/openapi-linter"
+	"gopkg.in/yaml.v3"
 )
 
 func portosUpsertRule(id string) bool {
@@ -78,6 +79,25 @@ func sourceLocation(root string, source site) string {
 	return filepath.Base(source.file) + source.ptr
 }
 
+func operationEmitter(pass *linter.Pass, doc *linter.Document, root site, op operation, ruleID string) func(site, string) {
+	return func(s site, message string) {
+		pointer := s.ptr
+		if s.file != root.file {
+			// Each root path and method gets its own pointer even when references share a file.
+			pointer = root.child("paths").child(op.path).child(op.method).ptr
+			if s.file == op.op.file && (s.ptr == op.op.ptr || strings.HasPrefix(s.ptr, op.op.ptr+"/")) {
+				pointer += strings.TrimPrefix(s.ptr, op.op.ptr)
+			}
+			message += " (" + sourceLocation(pass.Root, s) + ")"
+		}
+		line := doc.Line(pointer)
+		if line == 0 {
+			line = doc.Line(root.child("paths").child(op.path).ptr)
+		}
+		pass.Report(linter.Diagnostic{Path: doc.Path, Pointer: pointer, Line: line, RuleID: ruleID, Message: message, Severity: linter.SeverityError})
+	}
+}
+
 func (c apiCheck) analyzePortosUpsert(ctx context.Context, pass *linter.Pass) {
 	for _, doc := range pass.Documents {
 		if ctx.Err() != nil {
@@ -95,21 +115,10 @@ func (c apiCheck) analyzePortosUpsert(ctx context.Context, pass *linter.Pass) {
 		files := graphFiles(ctx)
 		files[file] = root.n
 		g := graph{root: pass.Root, files: files}
-		emit := func(s site, message string) {
-			pointer := s.ptr
-			if s.file != file {
-				pointer = "#"
-				if source, ok := g.sources[s.file]; ok && source.file == file {
-					pointer = source.ptr
-				}
-				message += " (" + sourceLocation(pass.Root, s) + ")"
-			}
-			pass.Report(linter.Diagnostic{Path: doc.Path, Pointer: pointer, Line: doc.Line(pointer), RuleID: c.id, Message: message, Severity: linter.SeverityError})
-		}
 		if c.id == "portos.path-patterns" {
 			for _, entry := range root.child("paths").pairs() {
 				if !strings.HasPrefix(entry.key, "x-") && !matchesAnyPath(entry.key, c.options.Patterns) {
-					emit(entry.value, "path must match one of the configured anchored patterns")
+					pass.Report(linter.Diagnostic{Path: doc.Path, Pointer: entry.value.ptr, Line: doc.Line(entry.value.ptr), RuleID: c.id, Message: "path must match one of the configured anchored patterns", Severity: linter.SeverityError})
 				}
 			}
 		} else {
@@ -118,22 +127,7 @@ func (c apiCheck) analyzePortosUpsert(ctx context.Context, pass *linter.Pass) {
 					return
 				}
 				if op.requestPath {
-					if c.id == "portos.write-methods" {
-						c.checkUpsertOperation(&g, op, func(s site, message string) {
-							// Keep method suppressions narrow even when a Path Item is referenced.
-							pointer := root.child("paths").child(op.path).child(op.method).ptr
-							line := doc.Line(pointer)
-							if line == 0 {
-								line = doc.Line(root.child("paths").child(op.path).ptr)
-							}
-							if s.file != file {
-								message += " (" + sourceLocation(pass.Root, s) + ")"
-							}
-							pass.Report(linter.Diagnostic{Path: doc.Path, Pointer: pointer, Line: line, RuleID: c.id, Message: message, Severity: linter.SeverityError})
-						})
-					} else {
-						c.checkUpsertOperation(&g, op, emit)
-					}
+					c.checkUpsertOperation(&g, op, operationEmitter(pass, doc, root, op, c.id))
 				}
 			}
 		}
@@ -153,16 +147,19 @@ func (c apiCheck) checkUpsertOperation(g *graph, op operation, emit func(site, s
 		if op.method != "post" && op.method != "delete" {
 			return
 		}
-		if !hasHeader(g, op, c.options.IdempotencyHeader) {
-			emit(op.op, "POST and DELETE operations must declare a "+c.options.IdempotencyHeader+" header")
+		if !requiredHeader(g, op, c.options.IdempotencyHeader) {
+			emit(op.op, "POST and DELETE operations must declare a required "+c.options.IdempotencyHeader+" header")
 		}
 		segment := op.path[strings.LastIndex(op.path, "/")+1:]
-		replace := op.method == "delete" || strings.HasPrefix(segment, "{") && strings.HasSuffix(segment, "}")
+		unconditional := op.method == "delete" || strings.HasPrefix(segment, "{") && strings.HasSuffix(segment, "}")
+		replace := unconditional
 		g.bodies(op.op, true, func(mt site) {
 			replace = replace || g.properties(mt.child("schema"))["id"].n != nil
 		})
-		if replace && !hasHeader(g, op, "If-Match") {
-			emit(op.op, "replace and delete operations must declare an If-Match header")
+		if unconditional && !requiredHeader(g, op, "If-Match") {
+			emit(op.op, "item POST and DELETE operations must declare a required If-Match header")
+		} else if replace && !hasHeader(g, op, "If-Match") {
+			emit(op.op, "id-bearing collection POST operations must declare an If-Match header for replacement")
 		}
 	case "portos.message-request":
 		if matchesAnyPath(op.path, c.options.Paths) {
@@ -179,6 +176,10 @@ func (c apiCheck) checkMessageRequest(g *graph, op operation, emit func(site, st
 	}
 	for _, media := range response.child("content").pairs() {
 		schema := g.resolve(media.value.child("schema"))
+		if !messageEnvelopeObject(g, schema) {
+			emit(schema, "message request response must be an object envelope")
+			continue
+		}
 		properties := g.properties(schema)
 		required := requiredProperties(g, schema)
 		for _, field := range []string{"results", "errors"} {
@@ -195,4 +196,30 @@ func (c apiCheck) checkMessageRequest(g *graph, op operation, emit func(site, st
 			emit(where, "message request status must be a required string enum exactly matching ["+strings.Join(c.options.Statuses, ", ")+"]")
 		}
 	}
+}
+
+func messageEnvelopeObject(g *graph, schema site) bool {
+	seen := map[*yaml.Node]bool{}
+	object := false
+	var walk func(site) bool
+	walk = func(s site) bool {
+		s = g.resolve(s)
+		if s.n == nil || seen[s.n] {
+			return true
+		}
+		seen[s.n] = true
+		if typ := s.child("type"); typ.n != nil {
+			if typ.value() != "object" {
+				return false
+			}
+			object = true
+		}
+		for _, parent := range s.child("allOf").list() {
+			if !walk(parent) {
+				return false
+			}
+		}
+		return true
+	}
+	return walk(schema) && object
 }

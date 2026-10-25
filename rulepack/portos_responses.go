@@ -34,16 +34,25 @@ func optionsFor(id string) apiOptions {
 	return o
 }
 
-func hasHeader(g *graph, op operation, name string) bool {
-	for _, parameters := range []site{op.item.child("parameters"), op.op.child("parameters")} {
+func headerParameter(g *graph, op operation, name string) site {
+	// Operation parameters override Path Item parameters with the same identity.
+	for _, parameters := range []site{op.op.child("parameters"), op.item.child("parameters")} {
 		for _, raw := range parameters.list() {
 			parameter := g.resolve(raw)
 			if parameter.child("in").value() == "header" && strings.EqualFold(parameter.child("name").value(), name) {
-				return true
+				return parameter
 			}
 		}
 	}
-	return false
+	return site{}
+}
+
+func hasHeader(g *graph, op operation, name string) bool {
+	return headerParameter(g, op, name).n != nil
+}
+
+func requiredHeader(g *graph, op operation, name string) bool {
+	return headerParameter(g, op, name).child("required").value() == "true"
 }
 
 func enumExactly(s site, values ...string) bool {
@@ -188,6 +197,10 @@ func (c apiCheck) analyzePortosResponses(ctx context.Context, pass *linter.Pass)
 			if !op.requestPath {
 				continue
 			}
+			emit := emit
+			if c.id == "portos.etag-conflict" || c.id == "portos.delete-idempotent" {
+				emit = operationEmitter(pass, doc, root, op, c.id)
+			}
 			base, batch, async := classify(op, c.options)
 			responses := op.op.child("responses")
 			switch c.id {
@@ -234,8 +247,8 @@ func (c apiCheck) analyzePortosResponses(ctx context.Context, pass *linter.Pass)
 				}
 			case "portos.delete-idempotent":
 				if base == "Delete" || op.method == "delete" {
-					if !hasHeader(&g, op, "Idempotency-Key") {
-						emit(op.op, "delete operations must declare an Idempotency-Key header for replay")
+					if !requiredHeader(&g, op, "Idempotency-Key") {
+						emit(op.op, "delete operations must declare a required Idempotency-Key header for replay")
 					}
 					if responses.child("410").n != nil {
 						emit(responses.child("410"), "delete operations use 404 for an unknown resource, not 410")

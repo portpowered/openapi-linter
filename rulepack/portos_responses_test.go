@@ -70,9 +70,9 @@ func TestPortosResponsePolicyBehavior(t *testing.T) {
 		{"major root", "version-prefix", "/v12", "get", "responses: {'200': {}}", 0},
 		{"missing prefix", "version-prefix", "/groups", "get", "responses: {'200': {}}", 1},
 		{"minor prefix", "version-prefix", "/v2.1/groups", "get", "responses: {'200': {}}", 1},
-		{"delete explicit", "delete-idempotent", "/v2/groups/{id}", "delete", "parameters: [{name: Idempotency-Key, in: header}], responses: {'200': {}}", 0},
+		{"delete explicit", "delete-idempotent", "/v2/groups/{id}", "delete", "parameters: [{name: Idempotency-Key, in: header, required: true}], responses: {'200': {}}", 0},
 		{"delete missing declaration", "delete-idempotent", "/v2/groups/{id}", "delete", "responses: {'200': {}}", 1},
-		{"delete absent failures", "delete-idempotent", "/v2/groups/{id}", "delete", "parameters: [{name: Idempotency-Key, in: header}], responses: {'200': {}, '404': {}, '410': {}}", 1},
+		{"delete absent failures", "delete-idempotent", "/v2/groups/{id}", "delete", "parameters: [{name: Idempotency-Key, in: header, required: true}], responses: {'200': {}, '404': {}, '410': {}}", 1},
 		{"get can be missing", "delete-idempotent", "/v2/groups/{id}", "get", "responses: {'404': {}}", 0},
 	}
 	for _, c := range cases {

@@ -866,7 +866,7 @@ portos.delete-idempotent:
       '
     good: 'operationId: DeleteWidget
 
-      parameters: [{name: Idempotency-Key, in: header, schema: {type: string}}]
+      parameters: [{name: Idempotency-Key, in: header, required: true, schema: {type: string}}]
 
       responses: {''200'': {description: OK}}
 
@@ -942,15 +942,15 @@ portos.write-methods:
 portos.upsert-headers:
   summary: Requires replay keys on POST and DELETE and declares If-Match on replacements and deletes.
   parameters:
-    idempotency-header: Case-insensitive header name required on POST and DELETE; default Idempotency-Key.
+    idempotency-header: Case-insensitive header name declared with required:true on POST and DELETE; default Idempotency-Key.
   example-options:
     idempotency-header: Idempotency-Key
   notes: Collection POST bodies with an id property may represent either create or replace. The header must be declared, but the server requires its value only for replacement. Local references and allOf properties are resolved.
   example:
     language: yaml
     bad: "paths: {/widgets: {post: {responses: {'200': {description: OK}}}}}\n"
-    good: "paths: {/widgets: {post: {parameters: [{name: Idempotency-Key, in: header, schema: {type: string}}], responses: {'200': {description: OK}}}}}\n"
-    explanation: Every POST declares a replay key. Every DELETE, item POST and collection POST with an id-bearing body also declares If-Match.
+    good: "paths: {/widgets: {post: {parameters: [{name: Idempotency-Key, in: header, required: true, schema: {type: string}}], responses: {'200': {description: OK}}}}}\n"
+    explanation: Every POST declares a replay key. Every DELETE and item POST requires If-Match. An id-bearing collection POST declares optional If-Match for its replacement case. Operation parameters override inherited parameters.
 portos.path-patterns:
   summary: Requires every request path to match one configured anchored regular expression.
   parameters:

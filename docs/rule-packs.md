@@ -130,7 +130,7 @@ The canonical defaults are Query, AsyncIdentifier, NameValue, DescriptionValue, 
 | portos.name-schema | name-schema, default NameValue |
 | portos.description-schema | description-schema, default DescriptionValue |
 | portos.write-methods | None; only GET, POST and DELETE |
-| portos.upsert-headers | idempotency-header, default Idempotency-Key; POST/DELETE declare it, item POST and id-bearing collection POST also declare If-Match, as does every DELETE |
+| portos.upsert-headers | idempotency-header, default Idempotency-Key; required on POST/DELETE; item POST and DELETE require If-Match, while id-bearing collection POST declares optional If-Match for replacements; operation parameters override inherited parameters |
 | portos.path-patterns | patterns: required non-empty list of anchored path regexes; no check-level default |
 | portos.message-request | paths defaults [^/message-requests$]; statuses defaults [QUEUED, IN_PROGRESS, SUCCEEDED, PARTIALLY_SUCCEEDED, FAILED]; matching operations return 200 with required results/errors arrays and an exact status enum |
 
