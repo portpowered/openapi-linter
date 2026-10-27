@@ -83,27 +83,6 @@ func portosFixedEnum(s site) bool {
 	return names[0].value() != names[1].value() && regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`).MatchString(names[0].value()) && regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`).MatchString(names[1].value())
 }
 
-func requiredProperties(g *graph, schema site) map[string]bool {
-	required := map[string]bool{}
-	visited := map[*yaml.Node]bool{}
-	var walk func(site)
-	walk = func(s site) {
-		s = g.resolve(s)
-		if s.n == nil || visited[s.n] {
-			return
-		}
-		visited[s.n] = true
-		for _, p := range s.child("required").list() {
-			required[p.value()] = true
-		}
-		for _, p := range s.child("allOf").list() {
-			walk(p)
-		}
-	}
-	walk(schema)
-	return required
-}
-
 func errorShape(g *graph, schema site) bool {
 	if !g.object(schema) {
 		return false
@@ -290,7 +269,7 @@ func (c apiCheck) analyzePortosResponses(ctx context.Context, pass *linter.Pass)
 						if array.child("type").value() != "array" || !g.object(item) || !requiredProperties(&g, body)[c.options.Items] || !requiredProperties(&g, item)[c.options.ItemID] {
 							invalidRequest = true
 						}
-						typ := g.resolve(g.properties(item)[c.options.ItemID]).child("type").value()
+						typ := g.schemaType(g.properties(item)[c.options.ItemID])
 						if (typ != "string" && typ != "integer") || (idType != "" && idType != typ) {
 							invalidRequest = true
 						}
@@ -308,13 +287,17 @@ func (c apiCheck) analyzePortosResponses(ctx context.Context, pass *linter.Pass)
 							item := array.child("items")
 							props := g.properties(item)
 							req := requiredProperties(&g, item)
-							valid = valid && array.child("type").value() == "array" && (array.child("minItems").n == nil || array.child("minItems").value() == "0") && g.object(item) && req[c.options.ItemID] && g.resolve(props[c.options.ItemID]).child("type").value() == idType
+							valid = valid && emptyBatchArray(&g, array) && g.object(item) && req[c.options.ItemID] && g.schemaType(props[c.options.ItemID]) == idType
 							if field == c.options.Errors {
-								valid = valid && req["error"] && g.named(props["error"], c.options.ErrorSchema) && errorShape(&g, props["error"])
+								if c.options.FlatErrorLayout {
+									valid = valid && g.named(item, c.options.ErrorSchema) && flatBatchErrorShape(&g, item, c.options.ItemID)
+								} else {
+									valid = valid && req["error"] && g.named(props["error"], c.options.ErrorSchema) && errorShape(&g, props["error"])
+								}
 							}
 						}
 						if !valid {
-							emit(mt, "synchronous batch responses require results and errors arrays; every entry requires the request item ID and each error requires a shared "+c.options.ErrorSchema+" object")
+							emit(mt, "synchronous batch responses require results and errors arrays; every entry requires the request item ID and failures must use the configured "+c.options.ErrorSchema+" error layout")
 						}
 					})
 					if count == 0 {

@@ -782,6 +782,7 @@ portos.batch-outcomes:
   summary: Requires synchronous Batch results and errors arrays with required request-compatible IDs and
     a shared error object on each failure.
   parameters:
+    flat-error-layout: Boolean opt-in for shared flat failure items with required ID, code, string family enum and free-text message; default false retains nested error objects.
     error-schema: Canonical schema name required in error-body references; empty disables reference-name
       checking in openapi.error-response.
     errors-field: Batch failure-array property name; default errors.
@@ -790,6 +791,7 @@ portos.batch-outcomes:
     results-field: Collection or Batch result-array property name; default results.
   example-options:
     error-schema: ErrorResponse
+    flat-error-layout: false
     errors-field: errors
     item-id-field: id
     items-field: items

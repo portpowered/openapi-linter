@@ -2472,6 +2472,9 @@
                   "errors-field": {
                     "type": "string"
                   },
+                  "flat-error-layout": {
+                    "type": "boolean"
+                  },
                   "item-id-field": {
                     "type": "string"
                   },

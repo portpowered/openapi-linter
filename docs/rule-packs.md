@@ -168,3 +168,17 @@ OpenAPI has no automatic semantic fixes. `Diagnostic.Pointer` and `Line` locate 
 See [Google API rules and analysis](google-api.md) for `openapi:google`, `google-defaults`, 16 checks and their five paired contract groups. These are opt-in REST projections of the AIPs.
 
 See [Portos response and schema contracts](portos-api.md) for the response rules, shared errors and Sort objects, batch correlation shape, and service-test requirements. `portos.etag-conflict` requires 412 and 428 for `If-Match`; 409 is reserved for operations declaring `Idempotency-Key`. `portos.delete-idempotent` requires that header, allows 404 and forbids 410; `x-portos-idempotent` no longer controls it.
+
+### Flat batch failures
+
+`portos.batch-outcomes` preserves nested `error` objects by default. For a canonical flat failure schema, configure `flat-error-layout: true` together with `error-schema`, `items-field` and `item-id-field`. Each failure must reference that schema and require its correlation ID, string code, string-enum family and free-text message. Other typed fields may be present. Object and ID inference requires every `oneOf`/`anyOf` alternative to satisfy the contract.
+
+```yaml
+- id: portos.batch-outcomes
+  check: portos.batch-outcomes
+  options:
+    items-field: operations
+    item-id-field: requestId
+    error-schema: BatchItemError
+    flat-error-layout: true
+```

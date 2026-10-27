@@ -704,6 +704,7 @@
     "defaults": {
       "error-schema": "ErrorResponse",
       "errors-field": "errors",
+      "flat-error-layout": false,
       "item-id-field": "id",
       "items-field": "items",
       "results-field": "results"
@@ -721,6 +722,7 @@
     "options": {
       "error-schema": "string",
       "errors-field": "string",
+      "flat-error-layout": "bool",
       "item-id-field": "string",
       "items-field": "string",
       "results-field": "string"

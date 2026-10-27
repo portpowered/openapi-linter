@@ -55,7 +55,9 @@ The complete [Portos fixture](../examples/portos/api.yaml) includes Query, share
 
 ## Options, overrides and rollout
 
-`portos.error-contract` accepts `error-schema`. `portos.query-sorts` accepts `sorts-field`. `portos.batch-outcomes` accepts `error-schema`, `items-field`, `results-field`, `errors-field`, and `item-id-field`. Defaults are `ErrorResponse`, `sorts`, `items`, `results`, `errors`, and `id`; blank values fail configuration validation. The error member of a failed item remains `error`.
+`portos.error-contract` accepts `error-schema`. `portos.query-sorts` accepts `sorts-field`. `portos.batch-outcomes` accepts `error-schema`, `items-field`, `results-field`, `errors-field`, `item-id-field`, and `flat-error-layout`. Defaults are `ErrorResponse`, `sorts`, `items`, `results`, `errors`, and `id`; blank values fail configuration validation. The error member of a failed item remains `error`. An explicit `flat-error-layout: true` instead requires each failure item to reference the configured shared error schema directly, with required item ID, string `code`, string-enum `family`, and free-text string `message`. Extra fields such as HTTP `status`, `details`, and resource IDs remain permitted. The default is false; nested error contracts are unchanged.
+
+Object inference follows every `oneOf` and `anyOf` alternative, including local references and `allOf` inheritance. A batch item ID must exist with a compatible type in every alternative, and required-field inference retains only fields required in all alternatives. A valid first variant cannot hide a missing or differently typed ID later in the union.
 
 ```yaml
 version: 1

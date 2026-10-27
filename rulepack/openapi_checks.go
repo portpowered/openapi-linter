@@ -34,6 +34,7 @@ type apiOptions struct {
 	Hosts                []string `yaml:"hosts"`
 	Classes              []string `yaml:"classes"`
 	ErrorSchema          string   `yaml:"error-schema"`
+	FlatErrorLayout      bool     `yaml:"flat-error-layout"`
 	DateFields           []string `yaml:"date-fields"`
 	CollectionOperations []string `yaml:"collection-operations"`
 	IdempotencyHeader    string   `yaml:"idempotency-header"`
@@ -70,7 +71,7 @@ func apiFactory(id string) Factory {
 		if portosResponseRule(id) {
 			for _, key := range optionNames(id) {
 				values := map[string]string{"error-schema": c.options.ErrorSchema, "sorts-field": c.options.Sorts, "items-field": c.options.Items, "results-field": c.options.Results, "errors-field": c.options.Errors, "item-id-field": c.options.ItemID}
-				if strings.TrimSpace(values[key]) == "" {
+				if key != "flat-error-layout" && strings.TrimSpace(values[key]) == "" {
 					return nil, fmt.Errorf("%s must not be blank", key)
 				}
 			}
@@ -248,30 +249,6 @@ func (g *graph) resolve(s site) site {
 		}
 	}
 	return s
-}
-func (g *graph) properties(s site) map[string]site {
-	out := map[string]site{}
-	visited := map[*yaml.Node]bool{}
-	var visit func(site)
-	visit = func(s site) {
-		s = g.resolve(s)
-		if s.n == nil || visited[s.n] {
-			return
-		}
-		visited[s.n] = true
-		for _, p := range s.child("properties").pairs() {
-			out[p.key] = p.value
-		}
-		for _, parent := range s.child("allOf").list() {
-			visit(parent)
-		}
-	}
-	visit(s)
-	return out
-}
-func (g *graph) object(s site) bool {
-	s = g.resolve(s)
-	return s.child("type").value() == "object" || len(g.properties(s)) > 0
 }
 func refName(s site, name string) bool {
 	ref := s.child("$ref").value()
@@ -664,14 +641,14 @@ func (c apiCheck) Analyze(ctx context.Context, pass *linter.Pass) {
 				if batch {
 					requireBody(func(s site) {
 						items := g.resolve(g.properties(s)[c.options.Items])
-						if items.child("type").value() != "array" || !g.object(items.child("items")) || g.properties(items.child("items"))[c.options.ItemID].n == nil {
+						if items.child("type").value() != "array" || !batchItemID(&g, items.child("items"), c.options.ItemID) {
 							emit(s, "Batch request requires items array of objects with ids")
 						}
 					})
 					if !async {
 						requireResponse(func(s site) {
 							results := g.resolve(g.properties(s)[c.options.Results])
-							if results.child("type").value() != "array" || !g.object(results.child("items")) || g.properties(results.child("items"))[c.options.ItemID].n == nil {
+							if results.child("type").value() != "array" || !batchItemID(&g, results.child("items"), c.options.ItemID) {
 								emit(s, "Batch response requires results array of objects with ids")
 							}
 						})
