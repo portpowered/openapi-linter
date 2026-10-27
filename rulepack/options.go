@@ -18,7 +18,7 @@ func optionNames(id string) []string {
 	case "portos.query-sorts":
 		return []string{"sorts-field"}
 	case "portos.batch-outcomes":
-		return []string{"items-field", "results-field", "errors-field", "item-id-field", "error-schema"}
+		return []string{"items-field", "results-field", "errors-field", "item-id-field", "error-schema", "flat-error-layout"}
 	case "openapi.operation-id":
 		return []string{"required", "pattern"}
 	case "openapi.operation-success-response":

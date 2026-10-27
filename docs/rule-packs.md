@@ -129,7 +129,7 @@ The canonical defaults are Query, AsyncIdentifier, NameValue, DescriptionValue, 
 | portos.query-graph | query-schema, default Query |
 | portos.name-schema | name-schema, default NameValue |
 | portos.description-schema | description-schema, default DescriptionValue |
-| portos.write-methods | None; only GET, POST and DELETE |
+| portos.write-methods | None; GET, HEAD and OPTIONS read protocols plus POST and DELETE writes; PUT, PATCH, TRACE and unrecognized methods remain forbidden |
 | portos.upsert-headers | idempotency-header, default Idempotency-Key; required on POST/DELETE; item POST and DELETE require If-Match, while id-bearing collection POST declares optional If-Match for replacements; operation parameters override inherited parameters |
 | portos.path-patterns | patterns: required non-empty list of anchored path regexes; no check-level default |
 | portos.message-request | paths defaults [^/message-requests$]; statuses defaults [QUEUED, IN_PROGRESS, SUCCEEDED, PARTIALLY_SUCCEEDED, FAILED]; matching operations return 200 with required results/errors arrays and an exact status enum |
@@ -168,3 +168,17 @@ OpenAPI has no automatic semantic fixes. `Diagnostic.Pointer` and `Line` locate 
 See [Google API rules and analysis](google-api.md) for `openapi:google`, `google-defaults`, 16 checks and their five paired contract groups. These are opt-in REST projections of the AIPs.
 
 See [Portos response and schema contracts](portos-api.md) for the response rules, shared errors and Sort objects, batch correlation shape, and service-test requirements. `portos.etag-conflict` requires 412 and 428 for `If-Match`; 409 is reserved for operations declaring `Idempotency-Key`. `portos.delete-idempotent` requires that header, allows 404 and forbids 410; `x-portos-idempotent` no longer controls it.
+
+### Flat batch failures
+
+`portos.batch-outcomes` preserves nested `error` objects by default. For a canonical flat failure schema, configure `flat-error-layout: true` together with `error-schema`, `items-field` and `item-id-field`. Each failure must reference that schema and require its correlation ID, string code, string-enum family and free-text message. Other typed fields may be present. Object and ID inference requires every `oneOf`/`anyOf` alternative to satisfy the contract.
+
+```yaml
+- id: portos.batch-outcomes
+  check: portos.batch-outcomes
+  options:
+    items-field: operations
+    item-id-field: requestId
+    error-schema: BatchItemError
+    flat-error-layout: true
+```

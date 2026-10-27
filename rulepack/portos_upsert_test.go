@@ -20,8 +20,8 @@ func TestWriteMethods_PatchIsAFinding(t *testing.T) {
 	}
 }
 
-func TestWriteMethods_GetPostDeletePass(t *testing.T) {
-	for _, method := range []string{"get", "post", "delete"} {
+func TestWriteMethods_ReadProtocolsAndResourceWritesPass(t *testing.T) {
+	for _, method := range []string{"get", "head", "options", "post", "delete"} {
 		if findings := checkAPI(t, "portos.write-methods", responsePolicySource("/groups", method, "GroupGet", "responses: {'200': {}}"), ""); len(findings) != 0 {
 			t.Fatalf("%s: %#v", method, findings)
 		}
@@ -254,7 +254,7 @@ func TestAPIReferenceFindings_BaselinesSurviveRelocation(t *testing.T) {
 			root := t.TempDir()
 			file := filepath.Join(root, "api.yaml")
 			source := apiHeader + "paths: {'/groups': {$ref: 'groups.yaml'}}\n"
-			for name, content := range map[string]string{"api.yaml": source, "groups.yaml": "post: {operationId: GroupList, parameters: [{name: If-Match, in: header}], responses: {'200': {}}}\noptions: {responses: {'200': {}}}\n"} {
+			for name, content := range map[string]string{"api.yaml": source, "groups.yaml": "post: {operationId: GroupList, parameters: [{name: If-Match, in: header}], responses: {'200': {}}}\npatch: {responses: {'200': {}}}\n"} {
 				if err := os.WriteFile(filepath.Join(root, name), []byte(content), 0600); err != nil {
 					t.Fatal(err)
 				}
@@ -273,7 +273,7 @@ func TestAPIReferenceFindings_BaselinesSurviveRelocation(t *testing.T) {
 			pointer := "#/paths/~1groups"
 			switch id {
 			case "portos.write-methods":
-				pointer += "/options"
+				pointer += "/patch"
 			case "portos.upsert-headers", "portos.etag-conflict":
 				pointer += "/post"
 			}
@@ -350,7 +350,7 @@ func TestUpsertChecks_SharedReferenceSuppressionsStayOperationSpecific(t *testin
     requestBody: {content: {application/json: {schema: {type: object, properties: {id: {type: string}}}}}}
     responses: {'200': {}}
   delete: {responses: {'200': {}}}
-  options: {responses: {'200': {}}}
+  patch: {responses: {'200': {}}}
 `
 		for name, content := range map[string]string{"api.yaml": source, "paths.yaml": "first:" + item + "second:" + item} {
 			if err := os.WriteFile(filepath.Join(root, name), []byte(content), 0600); err != nil {
@@ -375,9 +375,9 @@ func TestUpsertChecks_SharedReferenceSuppressionsStayOperationSpecific(t *testin
 					t.Fatal(err)
 				}
 				rule.Options = *options.Content[0]
-				want = 5 // OPTIONS is also a matching operation.
+				want = 5 // PATCH is also a matching operation.
 			case "portos.write-methods":
-				method, want = "options", 1
+				method, want = "patch", 1
 			}
 			pack := Pack{Version: 1, Rules: []Rule{rule}, Suppressions: []Suppression{{Rule: id, Path: "api.yaml", Pointer: "#/paths/~1alpha/" + method, Reason: "only this operation is exempt"}}}
 			program, err := registry.Compile(pack)
@@ -474,5 +474,33 @@ func TestPreconditionAndDelete_SharedReferenceSuppressionsStayOperationSpecific(
 				t.Fatalf("shared source attribution lost beta: %#v", finding)
 			}
 		}
+	}
+}
+
+func TestWriteMethods_ReadProtocolPathsNeedNoWriteHeaders(t *testing.T) {
+	for _, test := range []struct{ path, method string }{{"/favicon.ico", "head"}, {"/media/audio/{file}", "head"}, {"/integration-requests", "options"}} {
+		source := responsePolicySource(test.path, test.method, "GetProtocolMetadata", "responses: {'200': {}}")
+		for _, rule := range []string{"portos.write-methods", "portos.upsert-headers"} {
+			if findings := checkAPI(t, rule, source, ""); len(findings) != 0 {
+				t.Fatalf("%s %s %s: %#v", rule, test.method, test.path, findings)
+			}
+		}
+	}
+}
+
+func TestWriteMethods_UnsupportedMethodsRemainFindings(t *testing.T) {
+	for _, method := range []string{"put", "patch", "trace"} {
+		source := responsePolicySource("/groups/{id}", method, "UpsertGroup", "responses: {'200': {}}")
+		findings := checkAPI(t, "portos.write-methods", source, "")
+		if len(findings) != 1 || findings[0].Pointer != "#/paths/~1groups~1{id}/"+method {
+			t.Fatalf("%s: %#v", method, findings)
+		}
+	}
+	// CONNECT is not an OpenAPI request operation. The policy still rejects it if
+	// a caller supplies an operation directly; allowing HEAD/OPTIONS is no wildcard.
+	findings := 0
+	apiCheck{id: "portos.write-methods"}.checkUpsertOperation(nil, operation{method: "connect"}, func(_ site, _ string) { findings++ })
+	if findings != 1 {
+		t.Fatalf("CONNECT produced %d findings, want 1", findings)
 	}
 }

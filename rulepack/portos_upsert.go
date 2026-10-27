@@ -140,8 +140,8 @@ func (c apiCheck) analyzePortosUpsert(ctx context.Context, pass *linter.Pass) {
 func (c apiCheck) checkUpsertOperation(g *graph, op operation, emit func(site, string)) {
 	switch c.id {
 	case "portos.write-methods":
-		if op.method != "get" && op.method != "post" && op.method != "delete" {
-			emit(op.op, "only GET, POST and DELETE are allowed; replace PUT/PATCH writes with a collection POST")
+		if op.method != "get" && op.method != "head" && op.method != "options" && op.method != "post" && op.method != "delete" {
+			emit(op.op, "only GET, HEAD, OPTIONS, POST and DELETE are allowed; replace PUT/PATCH writes with a collection POST")
 		}
 	case "portos.upsert-headers":
 		if op.method != "post" && op.method != "delete" {

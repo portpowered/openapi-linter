@@ -782,6 +782,7 @@ portos.batch-outcomes:
   summary: Requires synchronous Batch results and errors arrays with required request-compatible IDs and
     a shared error object on each failure.
   parameters:
+    flat-error-layout: Boolean opt-in for shared flat failure items with required ID, code, string family enum and free-text message; default false retains nested error objects.
     error-schema: Canonical schema name required in error-body references; empty disables reference-name
       checking in openapi.error-response.
     errors-field: Batch failure-array property name; default errors.
@@ -790,6 +791,7 @@ portos.batch-outcomes:
     results-field: Collection or Batch result-array property name; default results.
   example-options:
     error-schema: ErrorResponse
+    flat-error-layout: false
     errors-field: errors
     item-id-field: id
     items-field: items
@@ -931,14 +933,14 @@ portos.etag-conflict:
       '
     explanation: ETag mismatch uses 412 and a missing precondition uses 428. Only an operation with an idempotency key may declare 409 for an in-flight request.
 portos.write-methods:
-  summary: Allows only GET, POST and DELETE on request paths.
+  summary: Allows GET, HEAD and OPTIONS read protocols, plus POST and DELETE resource writes.
   parameters: {}
   example-options: {}
   example:
     language: yaml
     bad: "paths: {/widgets: {patch: {responses: {'200': {description: OK}}}}}\n"
     good: "paths: {/widgets: {post: {responses: {'200': {description: OK}}}}}\n"
-    explanation: Resource writes use collection POST or DELETE rather than PATCH or PUT. Protocol exceptions use explicit suppressions.
+    explanation: Resource writes use collection POST or DELETE rather than PATCH or PUT. HEAD metadata reads and OPTIONS preflight remain allowed without write headers. TRACE and unrecognized methods remain forbidden; other protocol exceptions use explicit suppressions.
 portos.upsert-headers:
   summary: Requires replay keys on POST and DELETE and declares If-Match on replacements and deletes.
   parameters:
