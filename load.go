@@ -34,20 +34,27 @@ func validateReferences(ctx context.Context, path, root string, visited map[stri
 	if err := ctx.Err(); err != nil {
 		return nil, nil, err
 	}
-	if err := CheckPathRoot(root, path); err != nil {
-		return nil, nil, fmt.Errorf("input or reference %q: %w", path, err)
-	}
-	absolute, err := filepath.Abs(path)
+	lexical, err := filepath.Abs(path)
 	if err != nil {
 		return nil, nil, err
 	}
-	absolute, err = filepath.EvalSymlinks(absolute)
+	// This traversal owns visited. Repeated lexical paths were already confined
+	// and resolved in this load; later loads start with a fresh map.
+	if visited[lexical] {
+		return nil, nil, nil
+	}
+	if err := CheckPathRoot(root, path); err != nil {
+		return nil, nil, fmt.Errorf("input or reference %q: %w", path, err)
+	}
+	absolute, err := filepath.EvalSymlinks(lexical)
 	if err != nil {
 		return nil, nil, err
 	}
 	if visited[absolute] {
+		visited[lexical] = true
 		return nil, nil, nil
 	}
+	visited[lexical] = true
 	visited[absolute] = true
 	source, err := os.ReadFile(absolute)
 	if err != nil {

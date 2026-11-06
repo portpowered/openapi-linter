@@ -15,3 +15,5 @@ Test located diagnostics, strict configuration, deterministic output, empty inpu
 The module and pack schema use semantic versioning. Compatible additions can introduce new checks/options; removals or incompatible public API/schema changes require an appropriate version transition and consumer migration guidance. Never rewrite published tags.
 
 Reference parsing and successful root/target path validation share the lifetime of one `Program.Run`. Treat its input files as a stable snapshot while checks execute. Root confinement is checked before reusing parsed references, including for a different root; failed validations are never retained. Every new run starts fresh and observes source or symlink changes. No analysis results are persisted.
+
+Document loading visits each normalized source path once, including safe aliases of files already visited. Each new document load starts with its own visited set and checks the current reference graph.
