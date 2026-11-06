@@ -166,14 +166,27 @@ func contains(a []string, s string) bool {
 
 type graphContextKey struct{}
 
+type rootTarget struct{ root, file string }
+type referenceCache struct {
+	files   map[string]*yaml.Node
+	checked map[rootTarget]bool
+}
+
 func withGraphCache(ctx context.Context) context.Context {
-	return context.WithValue(ctx, graphContextKey{}, map[string]*yaml.Node{})
+	return context.WithValue(ctx, graphContextKey{}, referenceCache{map[string]*yaml.Node{}, map[rootTarget]bool{}})
 }
 func graphFiles(ctx context.Context) map[string]*yaml.Node {
-	if cache, ok := ctx.Value(graphContextKey{}).(map[string]*yaml.Node); ok {
-		return cache
+	if cache, ok := ctx.Value(graphContextKey{}).(referenceCache); ok {
+		return cache.files
 	}
 	return map[string]*yaml.Node{}
+}
+
+func graphPathChecks(ctx context.Context) map[rootTarget]bool {
+	if cache, ok := ctx.Value(graphContextKey{}).(referenceCache); ok {
+		return cache.checked
+	}
+	return map[rootTarget]bool{}
 }
 
 type graph struct {
@@ -181,6 +194,24 @@ type graph struct {
 	files   map[string]*yaml.Node
 	err     error
 	sources map[string]site
+	checked map[rootTarget]bool
+}
+
+// Parsed files and successful root checks share one Program.Run lifetime. A new
+// run observes changed sources and symlinks; a different root is always checked.
+func (g *graph) checkPath(file string) error {
+	key := rootTarget{g.root, file}
+	if g.checked[key] {
+		return nil
+	}
+	if err := linter.CheckPathRoot(g.root, file); err != nil {
+		return err
+	}
+	if g.checked == nil {
+		g.checked = map[rootTarget]bool{}
+	}
+	g.checked[key] = true
+	return nil
 }
 
 func (g *graph) resolve(s site) site {
@@ -206,7 +237,7 @@ func (g *graph) resolve(s site) site {
 			return s
 		}
 		seen[identity] = true
-		if e = linter.CheckPathRoot(g.root, file); e != nil {
+		if e = g.checkPath(file); e != nil {
 			g.err = e
 			return site{}
 		}
@@ -363,7 +394,7 @@ func (c apiCheck) Analyze(ctx context.Context, pass *linter.Pass) {
 		root := site{n: unwrap(doc.Root), file: file, ptr: "#"}
 		files := graphFiles(ctx)
 		files[file] = root.n
-		g := graph{root: pass.Root, files: files}
+		g := graph{root: pass.Root, files: files, checked: graphPathChecks(ctx)}
 		emit := func(s site, msg string) {
 			pointer := s.ptr
 			if s.file != file {

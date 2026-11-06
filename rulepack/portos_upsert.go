@@ -114,7 +114,7 @@ func (c apiCheck) analyzePortosUpsert(ctx context.Context, pass *linter.Pass) {
 		root := site{n: unwrap(doc.Root), file: file, ptr: "#"}
 		files := graphFiles(ctx)
 		files[file] = root.n
-		g := graph{root: pass.Root, files: files}
+		g := graph{root: pass.Root, files: files, checked: graphPathChecks(ctx)}
 		if c.id == "portos.path-patterns" {
 			for _, entry := range root.child("paths").pairs() {
 				if !strings.HasPrefix(entry.key, "x-") && !matchesAnyPath(entry.key, c.options.Patterns) {
