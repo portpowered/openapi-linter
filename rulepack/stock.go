@@ -110,7 +110,7 @@ func (c operationID) Analyze(ctx context.Context, pass *linter.Pass) {
 		file, _ := filepath.Abs(doc.Path)
 		files := graphFiles(ctx)
 		files[file] = unwrap(doc.Root)
-		g := graph{root: pass.Root, files: files}
+		g := graph{root: pass.Root, files: files, checked: graphPathChecks(ctx)}
 		root := site{n: unwrap(doc.Root), file: file, ptr: "#"}
 		for _, op := range g.operations(root) {
 			id := op.op.child("operationId").value()

@@ -130,7 +130,7 @@ func (c apiCheck) analyzePortosResponses(ctx context.Context, pass *linter.Pass)
 		root := site{n: unwrap(doc.Root), file: file, ptr: "#"}
 		files := graphFiles(ctx)
 		files[file] = root.n
-		g := graph{root: pass.Root, files: files}
+		g := graph{root: pass.Root, files: files, checked: graphPathChecks(ctx)}
 		emit := func(s site, message string) {
 			pointer := s.ptr
 			if s.file != file {
