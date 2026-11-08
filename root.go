@@ -14,11 +14,7 @@ func CheckPathRoot(root, target string) error {
 	if root == "" {
 		return nil
 	}
-	root, err := filepath.Abs(root)
-	if err != nil {
-		return err
-	}
-	root, err = filepath.EvalSymlinks(root)
+	root, err := resolveRoot(root)
 	if err != nil {
 		return err
 	}
@@ -29,14 +25,7 @@ func CheckPathRoot(root, target string) error {
 	for {
 		resolved, resolveErr := filepath.EvalSymlinks(target)
 		if resolveErr == nil {
-			relative, err := filepath.Rel(root, resolved)
-			if err != nil {
-				return err
-			}
-			if relative == ".." || strings.HasPrefix(relative, ".."+string(filepath.Separator)) {
-				return fmt.Errorf("path escapes document root")
-			}
-			return nil
+			return checkResolvedRoot(root, resolved)
 		}
 		if !os.IsNotExist(resolveErr) {
 			return resolveErr
@@ -47,4 +36,23 @@ func CheckPathRoot(root, target string) error {
 		}
 		target = parent
 	}
+}
+
+func resolveRoot(root string) (string, error) {
+	root, err := filepath.Abs(root)
+	if err != nil {
+		return "", err
+	}
+	return filepath.EvalSymlinks(root)
+}
+
+func checkResolvedRoot(root, target string) error {
+	relative, err := filepath.Rel(root, target)
+	if err != nil {
+		return err
+	}
+	if relative == ".." || strings.HasPrefix(relative, ".."+string(filepath.Separator)) {
+		return fmt.Errorf("path escapes document root")
+	}
+	return nil
 }
