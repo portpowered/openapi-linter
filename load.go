@@ -34,6 +34,17 @@ func validateReferences(ctx context.Context, path, root string, visited map[stri
 	if err := ctx.Err(); err != nil {
 		return nil, nil, err
 	}
+	resolvedRoot, err := resolveRoot(root)
+	if err != nil {
+		return nil, nil, fmt.Errorf("input or reference %q: %w", path, err)
+	}
+	return walkReferences(ctx, path, resolvedRoot, visited)
+}
+
+func walkReferences(ctx context.Context, path, root string, visited map[string]bool) (*yaml.Node, []byte, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, nil, err
+	}
 	lexical, err := filepath.Abs(path)
 	if err != nil {
 		return nil, nil, err
@@ -43,12 +54,12 @@ func validateReferences(ctx context.Context, path, root string, visited map[stri
 	if visited[lexical] {
 		return nil, nil, nil
 	}
-	if err := CheckPathRoot(root, path); err != nil {
-		return nil, nil, fmt.Errorf("input or reference %q: %w", path, err)
-	}
 	absolute, err := filepath.EvalSymlinks(lexical)
 	if err != nil {
 		return nil, nil, err
+	}
+	if err := checkResolvedRoot(root, absolute); err != nil {
+		return nil, nil, fmt.Errorf("input or reference %q: %w", path, err)
 	}
 	if visited[absolute] {
 		visited[lexical] = true
@@ -94,7 +105,7 @@ func validateReferences(ctx context.Context, path, root string, visited map[stri
 				}
 				if ref.Path != "" {
 					target := filepath.Join(filepath.Dir(absolute), filepath.FromSlash(ref.Path))
-					if _, _, err := validateReferences(ctx, target, root, visited); err != nil {
+					if _, _, err := walkReferences(ctx, target, root, visited); err != nil {
 						return err
 					}
 				}
