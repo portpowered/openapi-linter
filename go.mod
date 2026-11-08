@@ -6,6 +6,7 @@ require (
 	github.com/pb33f/libopenapi v0.33.11
 	github.com/santhosh-tekuri/jsonschema/v6 v6.0.2
 	go.yaml.in/yaml/v4 v4.0.0-rc.4
+	golang.org/x/sys v0.40.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 

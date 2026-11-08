@@ -17,3 +17,5 @@ The module and pack schema use semantic versioning. Compatible additions can int
 Reference parsing and successful root/target path validation share the lifetime of one `Program.Run`. Treat its input files as a stable snapshot while checks execute. Root confinement is checked before reusing parsed references, including for a different root; failed validations are never retained. Every new run starts fresh and observes source or symlink changes. No analysis results are persisted.
 
 Document loading visits each normalized source path once, including safe aliases of files already visited. Each new document load starts with its own visited set and checks the current reference graph.
+
+On Windows, ordinary local paths resolve through a metadata handle before root confinement is checked. Other paths and unavailable handles use the standard Go resolver.

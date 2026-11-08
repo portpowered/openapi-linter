@@ -23,7 +23,7 @@ func CheckPathRoot(root, target string) error {
 		return err
 	}
 	for {
-		resolved, resolveErr := filepath.EvalSymlinks(target)
+		resolved, resolveErr := resolveExistingPath(target)
 		if resolveErr == nil {
 			return checkResolvedRoot(root, resolved)
 		}
@@ -43,7 +43,7 @@ func resolveRoot(root string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return filepath.EvalSymlinks(root)
+	return resolveExistingPath(root)
 }
 
 func checkResolvedRoot(root, target string) error {
