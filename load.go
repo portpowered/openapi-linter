@@ -54,7 +54,7 @@ func walkReferences(ctx context.Context, path, root string, visited map[string]b
 	if visited[lexical] {
 		return nil, nil, nil
 	}
-	absolute, err := filepath.EvalSymlinks(lexical)
+	absolute, err := resolveExistingPath(lexical)
 	if err != nil {
 		return nil, nil, err
 	}
